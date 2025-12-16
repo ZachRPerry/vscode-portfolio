@@ -66,78 +66,76 @@ export default function useTerminal(
   const handleCommand = useCallback((cmd: string, skipEcho = false) => {
     const trimmed = cmd.trim().toLowerCase();
     setLines((prev) => {
-      const next: TerminalLine[] = skipEcho ? [...prev] : [...prev, { type: "command", content: cmd }];
+      // Add command and blank line
+      const next: TerminalLine[] = skipEcho
+        ? [...prev, { type: "output", content: "" }]
+        : [...prev, { type: "command", content: cmd }, { type: "output", content: "" }];
+
       if (trimmed === "clear" || trimmed === "cls") {
         return [{ type: "output", content: "Last login: just now" }];
       }
-      if (trimmed === "help") {
-        return [
-          ...next,
-          {
-            type: "output",
-            content: "Available commands: npm, npm run dev, npm run build, hire, help, clear",
-          },
-        ];
-      }
-      if (trimmed === "npm") {
-        return [
-          ...next,
-          { type: "output", content: "added 123 packages, and audited 123 packages in 2s" },
-        ];
-      }
-      if (trimmed === "npm run dev") {
-        return [
-          ...next,
-          { type: "output", content: "VITE v5.0.0 ready in 245 ms" },
-          { type: "output", content: "  ➜  Local:   http://localhost:5173/" },
-        ];
-      }
-      if (trimmed === "npm run build") {
-        return [
-          ...next,
-          { type: "output", content: "vite v5.0.0 building for production..." },
-          { type: "output", content: "✓ 1234 modules transformed." },
-        ];
-      }
-      if (trimmed === "hire") {
-        // Trigger callback to show confetti
-        if (onHire) {
-          setTimeout(() => onHire(), 0);
-        }
-        return [
-          ...next,
-          { type: "output", content: HIRE_SUCCESS_MSG },
-          { type: "output", content: HIRE_CONTACT_MSG },
-        ];
-      }
-      if (trimmed === "clearachievements") {
-        if (onClearAchievements) {
-          onClearAchievements();
-        }
-        return [
-          ...next,
-          { type: "output", content: "All achievements cleared." },
-        ];
-      }
-      if (trimmed === "allachievements") {
-        if (onUnlockAll) {
-          onUnlockAll();
-        }
-        return [
-          ...next,
-          { type: "output", content: "All achievements unlocked!" },
-        ];
-      }
-      if (trimmed === "") {
-        return next;
-      }
-      return [
-        ...next,
-        {
-          type: "output",
-          content: `Command not found: ${cmd}. Type 'help' for available commands.`,
-        },
-      ];
+
+      // For all other commands, schedule output after 1 second
+      setTimeout(() => {
+        setLines((prevLines) => {
+          let outputLines: TerminalLine[] = [];
+
+          if (trimmed === "help") {
+            outputLines = [
+              {
+                type: "output",
+                content: "Available commands: npm, npm run dev, npm run build, hire, help, clear",
+              },
+            ];
+          } else if (trimmed === "npm") {
+            outputLines = [
+              { type: "output", content: "added 123 packages, and audited 123 packages in 2s" },
+            ];
+          } else if (trimmed === "npm run dev") {
+            outputLines = [
+              { type: "output", content: "VITE v5.0.0 ready in 245 ms" },
+              { type: "output", content: "  ➜  Local:   http://localhost:5173/" },
+            ];
+          } else if (trimmed === "npm run build") {
+            outputLines = [
+              { type: "output", content: "vite v5.0.0 building for production..." },
+              { type: "output", content: "✓ 1234 modules transformed." },
+            ];
+          } else if (trimmed === "hire") {
+            // Trigger callback to show confetti
+            if (onHire) {
+              onHire();
+            }
+            outputLines = [
+              { type: "output", content: HIRE_SUCCESS_MSG },
+              { type: "output", content: HIRE_CONTACT_MSG },
+            ];
+          } else if (trimmed === "clearachievements") {
+            if (onClearAchievements) {
+              onClearAchievements();
+            }
+            outputLines = [{ type: "output", content: "All achievements cleared." }];
+          } else if (trimmed === "allachievements") {
+            if (onUnlockAll) {
+              onUnlockAll();
+            }
+            outputLines = [{ type: "output", content: "All achievements unlocked!" }];
+          } else if (trimmed !== "") {
+            outputLines = [
+              {
+                type: "output",
+                content: `Command not found: ${cmd}. Type 'help' for available commands.`,
+              },
+            ];
+          }
+
+          // Remove the blank line and add the actual output
+          const removedBlankLine = prevLines.slice(0, -1);
+          return [...removedBlankLine, ...outputLines];
+        });
+      }, 1000);
+
+      return next;
     });
     setHistory((prev) => [...prev, cmd]);
     setHistoryIndex(-1);
