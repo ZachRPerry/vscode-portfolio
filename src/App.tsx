@@ -40,6 +40,13 @@ export default function App() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [savedEditorState, setSavedEditorState] = useState<{
+    activeFile: string;
+    openTabs: string[];
+  }>({
+    activeFile: "",
+    openTabs: [],
+  });
   const terminalCommandRef = useRef<((cmd: string, skipEcho?: boolean) => void) | null>(null);
 
   const achievements = useAchievements();
@@ -142,12 +149,16 @@ export default function App() {
           isAchievementsActive={showAchievements}
           onOpenTerminal={() => setShowTerminal(true)}
           onOpenExplorer={() => {
-            setShowLanding(true);
             setShowAchievements(false);
-            setActiveFile("");
-            setOpenTabs([]);
+            // Always restore saved editor state (coming from achievements)
+            setActiveFile(savedEditorState.activeFile);
+            setOpenTabs(savedEditorState.openTabs);
+            // Only show landing if no files were saved
+            setShowLanding(!savedEditorState.activeFile);
           }}
           onOpenAchievements={() => {
+            // Save current editor state before switching away
+            setSavedEditorState({ activeFile, openTabs });
             setShowAchievements(true);
             setShowLanding(false);
             setActiveFile("");
