@@ -1,7 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import useTerminal from "../hooks/useTerminal";
 
-export default function TerminalPane({ t, theme }: { t: { terminalBg: string }; theme?: string }) {
+export default function TerminalPane({
+  t,
+  theme,
+  onClose,
+}: {
+  t: { terminalBg: string };
+  theme?: string;
+  onClose?: () => void;
+}) {
   const { lines, input, setInput, handleKeyDown, handleCommand } = useTerminal(theme);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -16,9 +24,9 @@ export default function TerminalPane({ t, theme }: { t: { terminalBg: string }; 
   const chipClassSecondary = isLight
     ? "px-2 py-0.5 bg-[#e5e7eb] rounded text-xs text-[#1f2937]"
     : "px-2 py-0.5 bg-[#1f2937] rounded text-xs";
-  const scrollBg = isLight ? "bg-[#f9f9f9]" : "bg-[#0b0b0b]";
   const promptColor = isLight ? "text-green-700" : "text-green-400";
   const inputTextColor = isLight ? "text-[#1e1e1e]" : "text-gray-100";
+  const separatorBorder = isLight ? "border-t border-gray-300" : "border-t border-[#3a3d41]";
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -27,7 +35,11 @@ export default function TerminalPane({ t, theme }: { t: { terminalBg: string }; 
   }, [lines]);
 
   return (
-    <div className={`h-40 font-mono text-sm flex flex-col ${rootBg}`}>
+    <div
+      className={`h-40 font-mono text-sm flex flex-col ${t.terminalBg} ${separatorBorder} ${
+        isLight ? "text-[#1e1e1e]" : "text-gray-200"
+      }`}
+    >
       <div
         className={`flex items-center justify-between px-3 py-1 text-xs border-b ${headerBorder}`}
       >
@@ -35,10 +47,23 @@ export default function TerminalPane({ t, theme }: { t: { terminalBg: string }; 
           <div className={chipClass}>TERMINAL</div>
           <div className={chipClassSecondary}>1: powershell</div>
         </div>
-        <div className={`text-xs ${headerTextMuted}`}>vscode</div>
+        <div className="flex items-center gap-3">
+          <div className={`text-xs ${headerTextMuted}`}>vscode</div>
+          {onClose && (
+            <button
+              type="button"
+              title="Close Terminal"
+              aria-label="Close Terminal"
+              onClick={onClose}
+              className={`${isLight ? "hover:bg-[#e5e7eb]" : "hover:bg-[#2a2d2e]"} rounded px-2 py-0.5`}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
-      <div ref={scrollRef} className={`flex-1 overflow-auto px-3 py-2 space-y-1 ${scrollBg}`}>
+      <div ref={scrollRef} className="flex-1 overflow-auto px-3 py-2 space-y-1">
         {lines.map((line, i) => (
           <div key={i}>
             {line.type === "command" && (

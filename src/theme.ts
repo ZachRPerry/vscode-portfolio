@@ -8,7 +8,7 @@ export const themes = {
     tabsBg: "bg-[#252526]",
     tabActive: "bg-[#1e1e1e] text-white",
     tabInactive: "bg-[#2d2d2d] text-[#cccccc]",
-    terminalBg: "bg-[#012456]",
+    terminalBg: "bg-[#1e1e1e]",
   },
   light: {
     monaco: "vs",
@@ -20,17 +20,6 @@ export const themes = {
     tabActive: "bg-white text-black",
     tabInactive: "bg-[#dddddd] text-black",
     terminalBg: "bg-[#f3f3f3]",
-  },
-  hc: {
-    monaco: "hc-black",
-    appBg: "bg-black text-white",
-    menuBg: "bg-black text-white",
-    sidebarBg: "bg-black",
-    explorerBg: "bg-black",
-    tabsBg: "bg-black",
-    tabActive: "bg-yellow-400 text-black",
-    tabInactive: "bg-black text-white",
-    terminalBg: "bg-black",
   },
 } as const;
 

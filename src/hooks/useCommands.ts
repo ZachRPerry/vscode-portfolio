@@ -4,7 +4,8 @@ import type { ThemeKey } from "../theme";
 
 export default function useCommands(
   openFile: (f: string) => void,
-  setTheme: (t: ThemeKey) => void
+  setTheme: (t: ThemeKey) => void,
+  openTerminal?: () => void
 ): Command[] {
   return useMemo<Command[]>(
     () => [
@@ -38,12 +39,17 @@ export default function useCommands(
         action: () => setTheme("light"),
         keywords: ["theme"],
       },
-      {
-        id: "theme-hc",
-        title: "Theme: High Contrast",
-        action: () => setTheme("hc"),
-        keywords: ["theme", "accessibility"],
-      },
+      // Removed HC theme command; only light/dark supported
+      ...(openTerminal
+        ? [
+            {
+              id: "terminal-open",
+              title: "Terminal: Open",
+              action: () => openTerminal(),
+              keywords: ["terminal", "panel", "open"],
+            } as Command,
+          ]
+        : []),
       {
         id: "easter-egg",
         title: "Hire and pay lots of money",
@@ -52,6 +58,6 @@ export default function useCommands(
         keywords: ["easter egg", "fun"],
       },
     ],
-    [openFile, setTheme]
+    [openFile, setTheme, openTerminal]
   );
 }

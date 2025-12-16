@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { TerminalLine } from "../types";
-import { SUCCESS_MSG, WARNING_MSG } from "../constants/terminal";
+import { SUCCESS_MSG, WARNING_MSG, WHY_MSG } from "../constants/terminal";
 
 export default function useTerminal(theme?: string) {
   const [lines, setLines] = useState<TerminalLine[]>([
@@ -28,6 +28,11 @@ export default function useTerminal(theme?: string) {
     const prev = prevThemeRef.current;
     if (prev && prev !== theme) {
       if (prev === "dark" && theme === "light") {
+        setLines((prevLines) => [
+          ...prevLines,
+          { type: "output", content: WHY_MSG },
+        ]);
+        // Add the regular warning if not already present
         setLines((prevLines) => {
           if (
             prevLines.some(
