@@ -7,11 +7,13 @@ export default function Header({
 	setTheme,
 	t,
 	onOpenPalette,
+	onLogoClick,
 }: {
 	theme: ThemeKey;
 	setTheme: (s: ThemeKey) => void;
 	t: { menuBg: string };
 	onOpenPalette: (anchor: DOMRect) => void;
+	onLogoClick: () => void;
 }) {
 	const isLight = theme === "light";
 	const boxBg = isLight
@@ -25,11 +27,17 @@ export default function Header({
 		<header className={`h-8 flex items-center px-3 text-xs ${t.menuBg}`}>
 			{/* Left: menu + logo */}
 			<div className="flex items-center gap-0">
-				<img
-					src="/zLogoVS.png"
-					alt="zach VS logo"
-					className="w-5 h-5 mr-3 select-none"
-				/>
+				<button
+					onClick={onLogoClick}
+					title="Go to home"
+					className="cursor-pointer hover:opacity-80 transition-opacity"
+				>
+					<img
+						src="/zLogoVS.png"
+						alt="zach VS logo"
+						className="w-5 h-5 mr-3 select-none"
+					/>
+				</button>
 				<span className="mr-4">File</span>
 				<span className="mr-4">Edit</span>
 				<span className="mr-4">Selection</span>

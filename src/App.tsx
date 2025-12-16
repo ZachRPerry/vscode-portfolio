@@ -16,8 +16,15 @@ export default function App() {
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
-	const { files, openTabs, activeFile, openFile, closeTab, setActiveFile } =
-		useFiles();
+	const {
+		files,
+		openTabs,
+		activeFile,
+		openFile,
+		closeTab,
+		setActiveFile,
+		setOpenTabs,
+	} = useFiles();
 
 	const file = files[activeFile as keyof typeof files];
 
@@ -92,6 +99,10 @@ export default function App() {
 				onOpenPalette={(rect) => {
 					setAnchorRect(rect);
 					setPaletteOpen(true);
+				}}
+				onLogoClick={() => {
+					setActiveFile("");
+					setOpenTabs([]);
 				}}
 			/>
 
