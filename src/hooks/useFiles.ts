@@ -2,20 +2,34 @@ import { useEffect, useState } from "react";
 import type { FileMap } from "../types";
 import useGitHubRepo from "./useGitHubRepo";
 
-export default function useFiles() {
+export default function useFiles(onOpenTerminal?: () => void) {
   const [files, setFiles] = useState<FileMap>({});
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
   const [githubEnabled, setGithubEnabled] = useState(false);
   const [terminalCommandRef, setTerminalCommandRef] = useState<((cmd: string, skipEcho?: boolean) => void) | null>(null);
-  const { files: githubFiles, error: githubError } = useGitHubRepo("zachrperry", "vscode-portfolio", githubEnabled);
+  const [pendingError, setPendingError] = useState<string | null>(null);
+  const [errorSent, setErrorSent] = useState(false);
+  const { files: githubFiles, error: githubError } = useGitHubRepo("zachrperry", "vscode-portfolio", githubEnabled, terminalCommandRef, onOpenTerminal);
 
-  // Send GitHub error to terminal when it occurs
+  // When error occurs, store it and open terminal (only once)
   useEffect(() => {
-    if (githubError && terminalCommandRef) {
-      terminalCommandRef(`echo "❌ GitHub API Error: ${githubError}"`, true);
+    if (githubError && githubError !== pendingError && !errorSent) {
+      setPendingError(githubError);
+      if (onOpenTerminal) {
+        onOpenTerminal();
+      }
     }
-  }, [githubError, terminalCommandRef]);
+  }, [githubError, pendingError, onOpenTerminal, errorSent]);
+
+  // When ref becomes available and we have a pending error, send it
+  useEffect(() => {
+    if (pendingError && terminalCommandRef && !errorSent) {
+      terminalCommandRef(`echo "❌ GitHub API Error: ${pendingError}"`, true);
+      setErrorSent(true); // Mark as sent to prevent repeats
+      setPendingError(null);
+    }
+  }, [pendingError, terminalCommandRef, errorSent]);
 
   useEffect(() => {
     const modules = import.meta.glob("../files/**/*", { as: "raw" });

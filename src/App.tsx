@@ -49,7 +49,7 @@ export default function App() {
     setOpenTabs,
     enableGitHub,
     setTerminalCommandRef,
-  } = useFiles();
+  } = useFiles(() => view.setShowTerminal(true));
   const file = files[activeFile as keyof typeof files];
 
   // Wrap openFile to track achievements and hide views
@@ -67,11 +67,11 @@ export default function App() {
   useAppEffects(achievements, theme, view.showThemeTip, view.setShowThemeTip, view.setPaletteOpen);
 
   // Connect terminal command ref to useFiles for GitHub errors
+  // Update whenever showTerminal changes (terminal opens/closes)
   useEffect(() => {
-    if (terminalCommandRef.current) {
-      setTerminalCommandRef(terminalCommandRef.current);
-    }
-  }, [terminalCommandRef.current, setTerminalCommandRef]);
+    // Wrap in arrow function to avoid React treating it as a state updater
+    setTerminalCommandRef(() => terminalCommandRef.current);
+  }, [view.showTerminal, setTerminalCommandRef]);
 
   // Callbacks for confetti
   const handleShowConfetti = useCallback(() => {

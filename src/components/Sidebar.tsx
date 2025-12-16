@@ -54,51 +54,43 @@ export default function Sidebar({
       </button>
 
       {/* Achievements opener */}
-      <div
+      <button
+        type="button"
+        onClick={onOpenAchievements}
+        aria-label="View Achievements"
         className={`w-full px-3 py-2 rounded-r-md flex justify-center relative overflow-visible ${
-          isAchievementsActive ? activeBg : iconHover
+          isAchievementsActive ? activeBg : hoverBg
         }`}
       >
-        <button
-          type="button"
-          onClick={onOpenAchievements}
-          aria-label="View Achievements"
-          className="w-full flex justify-center"
-        >
-          <TrophyIcon
-            className={`${isAchievementsActive ? activeIconColor : inactiveIconColor} w-6 h-6`}
-          />
-        </button>
+        <TrophyIcon
+          className={`${isAchievementsActive ? activeIconColor : inactiveIconColor} w-6 h-6`}
+        />
         {isAchievementsActive ? (
           <span className="absolute left-0 top-1/2 -translate-y-1/2 h-12 w-1 bg-[#007acc] rounded-r-sm z-10 pointer-events-none" />
         ) : null}
-      </div>
+      </button>
 
       <div className="w-8 border-t border-gray-600" />
 
-      <div className="w-full flex justify-center">
-        <a
-          href="https://github.com/zachrperry"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-          className={`w-full px-3 py-2 flex justify-center ${iconHover} rounded-r-md`}
-        >
-          <GitHubIcon className={`w-6 h-6 ${inactiveIconColor}`} />
-        </a>
-      </div>
+      <a
+        href="https://github.com/zachrperry"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        className={`w-full px-3 py-2 flex justify-center ${iconHover} rounded-r-md`}
+      >
+        <GitHubIcon className={`w-6 h-6 ${inactiveIconColor}`} />
+      </a>
 
-      <div className="w-full flex justify-center">
-        <a
-          href="https://linkedin.com/in/zachrperry"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn"
-          className={`w-full px-3 py-2 flex justify-center ${iconHover} rounded-r-md`}
-        >
-          <LinkedInIcon className={`w-6 h-6 ${inactiveIconColor}`} />
-        </a>
-      </div>
+      <a
+        href="https://linkedin.com/in/zachrperry"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="LinkedIn"
+        className={`w-full px-3 py-2 flex justify-center ${iconHover} rounded-r-md`}
+      >
+        <LinkedInIcon className={`w-6 h-6 ${inactiveIconColor}`} />
+      </a>
     </aside>
   );
 }

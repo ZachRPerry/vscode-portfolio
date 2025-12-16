@@ -9,20 +9,25 @@ interface GitHubTreeItem {
   url: string;
 }
 
-export default function useGitHubRepo(owner: string, repo: string, enabled: boolean = false) {
+export default function useGitHubRepo(
+  owner: string,
+  repo: string,
+  enabled: boolean = false,
+  terminalCommandRef: ((cmd: string, skipEcho?: boolean) => void) | null = null,
+  onOpenTerminal?: () => void
+) {
   const [files, setFiles] = useState<Record<string, { language: string; value: string }>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    if (!enabled || hasLoaded) return;
+    // Don't fetch if not enabled, already loaded, or had an error
+    if (!enabled || hasLoaded || error) return;
 
     const fetchRepoFiles = async () => {
       setLoading(true);
       try {
-        console.log(`Fetching GitHub repo: ${owner}/${repo}`);
-        
         // Fetch the default branch first
         const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
         if (!repoResponse.ok) {
@@ -30,7 +35,6 @@ export default function useGitHubRepo(owner: string, repo: string, enabled: bool
         }
         const repoData = await repoResponse.json();
         const defaultBranch = repoData.default_branch;
-        console.log("Default branch:", defaultBranch);
 
         // Fetch the complete tree recursively
         const treeResponse = await fetch(
@@ -42,7 +46,6 @@ export default function useGitHubRepo(owner: string, repo: string, enabled: bool
         }
 
         const treeData = await treeResponse.json();
-        console.log("GitHub tree response:", treeData);
         
         const fileTree: GitHubTreeItem[] = treeData.tree;
 
@@ -56,8 +59,6 @@ export default function useGitHubRepo(owner: string, repo: string, enabled: bool
             !item.path.startsWith(".") &&
             (item.size || 0) < 100000 // Skip files larger than 100KB
         );
-
-        console.log(`Found ${files.length} files to fetch`);
 
         const fileContents: Record<string, { language: string; value: string }> = {};
 
@@ -107,20 +108,16 @@ export default function useGitHubRepo(owner: string, repo: string, enabled: bool
                 fileContents[`GitHub/${file.path}`] = { language, value: content };
               }
             } catch (err) {
-              console.warn(`Failed to fetch ${file.path}:`, err);
+              // Silently skip files that fail to fetch
             }
           })
         );
 
-        console.log("Fetched GitHub files:", Object.keys(fileContents));
         setFiles(fileContents);
         setHasLoaded(true);
         setLoading(false);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error";
-        console.error("❌ GitHub API Error:", errorMessage);
-        console.error("Failed to fetch repository:", `${owner}/${repo}`);
-        console.error("Full error:", err);
         setError(errorMessage);
         setLoading(false);
       }

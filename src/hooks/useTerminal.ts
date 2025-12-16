@@ -76,6 +76,14 @@ export default function useTerminal(
         return [{ type: "output", content: "Last login: just now" }];
       }
 
+      // Handle echo commands immediately without delay
+      if (trimmed.startsWith("echo ")) {
+        const message = cmd.trim().substring(5).replace(/^["']|["']$/g, ''); // Remove echo and quotes
+        const outputLines: TerminalLine[] = [{ type: "output", content: message }];
+        const removedBlankLine = next.slice(0, -1);
+        return [...removedBlankLine, ...outputLines];
+      }
+
       // For all other commands, schedule output after 1 second
       setTimeout(() => {
         setLines((prevLines) => {
