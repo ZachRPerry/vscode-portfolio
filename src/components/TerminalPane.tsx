@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
+import useTerminal from "../hooks/useTerminal";
 
-export default function TerminalPane({ t }: { t: { terminalBg: string } }) {
+export default function TerminalPane({
+	t,
+	theme,
+}: {
+	t: { terminalBg: string };
+	theme?: string;
+}) {
+	const { lines, input, setInput, handleKeyDown, handleCommand } =
+		useTerminal(theme);
+	const scrollRef = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (scrollRef.current) {
+			scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+		}
+	}, [lines]);
+
 	return (
 		<div className="h-40 font-mono text-sm flex flex-col bg-[#0b0b0b] text-gray-200">
 			<div className="flex items-center justify-between bg-[#0b0b0b] px-3 py-1 text-xs border-b border-[#222]">
@@ -15,31 +33,45 @@ export default function TerminalPane({ t }: { t: { terminalBg: string } }) {
 				<div className="text-xs text-gray-400">vscode</div>
 			</div>
 
-			<div className="flex-1 overflow-auto bg-[#0b0b0b] px-3 py-2">
-				<div className="text-gray-500 text-xs mb-2">Last login: just now</div>
-
-				<div className="space-y-1">
-					<div>
-						<span className="text-green-400">PS C:\\Users\\zach&gt;</span>
-						<span className="ml-2 text-gray-100">npm install</span>
+			<div
+				ref={scrollRef}
+				className="flex-1 overflow-auto bg-[#0b0b0b] px-3 py-2 space-y-1"
+			>
+				{lines.map((line, i) => (
+					<div key={i}>
+						{line.type === "command" && (
+							<div>
+								<span className="text-green-400">PS C:\\Users\\zach&gt;</span>
+								<span className="ml-2 text-gray-100">{line.content}</span>
+							</div>
+						)}
+						{line.type === "output" && (
+							<div
+								className={
+									line.content.toLowerCase().startsWith("warning")
+										? "text-amber-400"
+										: line.content.startsWith("✓") ||
+										  line.content.toLowerCase().startsWith("success")
+										? "text-green-400"
+										: "text-gray-500"
+								}
+							>
+								{line.content}
+							</div>
+						)}
 					</div>
-
-					<div className="text-gray-500">
-						added 123 packages, and audited 123 packages in 2s
-					</div>
-
-					<div>
-						<span className="text-green-400">PS C:\\Users\\zach&gt;</span>
-						<span className="ml-2 text-gray-100">npm run dev</span>
-					</div>
-
-					<div className="text-gray-500">Local: http://localhost:5173</div>
-
-					<div className="flex items-center gap-2">
-						<span className="text-green-400">PS C:\\Users\\zach&gt;</span>
-						<span className="ml-1 text-gray-100"> </span>
-						<span className="w-1 h-4 bg-gray-100 inline-block animate-pulse" />
-					</div>
+				))}
+				<div className="flex items-center">
+					<span className="text-green-400">PS C:\\Users\\zach&gt;</span>
+					<input
+						ref={inputRef}
+						type="text"
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
+						onKeyDown={handleKeyDown}
+						className="ml-2 bg-transparent text-gray-100 outline-none flex-1"
+						autoFocus
+					/>
 				</div>
 			</div>
 		</div>

@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
-type Command = {
-	id: string;
-	title: string;
-	subtitle?: string;
-	keywords?: string[];
-	action: () => void;
-};
+import type { Command } from "../types";
 
 export default function CommandPalette({
 	open,

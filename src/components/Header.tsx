@@ -1,6 +1,5 @@
 import React from "react";
-
-type ThemeKey = "dark" | "light" | "hc";
+import type { ThemeKey } from "../theme";
 
 export default function Header({
 	theme,

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import type { FileMap } from "../types";
 
 export default function useFiles() {
-  const [files, setFiles] = useState<Record<string, { language: string; value: string }>>({});
+  const [files, setFiles] = useState<FileMap>({});
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
 
@@ -22,11 +23,24 @@ export default function useFiles() {
           const content = await loader();
           const name = path.split("/").pop() || path;
           const ext = name.split(".").pop()?.toLowerCase();
-          let language = "text";
-          if (ext === "md" || ext === "markdown") language = "markdown";
-          else if (ext === "json") language = "json";
-          else if (ext === "ts") language = "typescript";
-          else if (ext === "js") language = "javascript";
+          let language: string;
+          switch (ext) {
+            case "md":
+            case "markdown":
+              language = "markdown";
+              break;
+            case "json":
+              language = "json";
+              break;
+            case "ts":
+              language = "typescript";
+              break;
+            case "js":
+              language = "javascript";
+              break;
+            default:
+              language = "text";
+          }
 
           results[name] = { language, value: content };
         })

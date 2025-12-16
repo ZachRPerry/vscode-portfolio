@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Explorer from "./components/Explorer";
@@ -9,12 +9,35 @@ import Footer from "./components/Footer";
 import { themes, ThemeKey } from "./theme";
 import useFiles from "./hooks/useFiles";
 import CommandPalette from "./components/CommandPalette";
+import useCommands from "./hooks/useCommands";
 
 export default function App() {
-	const [theme, setTheme] = useState<ThemeKey>("dark");
+	const getInitialTheme = (): ThemeKey => {
+		// Check localStorage first
+		const saved = localStorage.getItem("theme") as ThemeKey | null;
+		if (saved && (saved === "dark" || saved === "light" || saved === "hc")) {
+			return saved;
+		}
+		// Fall back to device theme
+		if (
+			window.matchMedia &&
+			window.matchMedia("(prefers-color-scheme: light)").matches
+		) {
+			return "light";
+		}
+		return "dark";
+	};
+
+	const [theme, setThemeState] = useState<ThemeKey>(getInitialTheme());
 	const t = themes[theme];
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+
+	// Wrapper to save theme to localStorage
+	const setTheme = (newTheme: ThemeKey) => {
+		setThemeState(newTheme);
+		localStorage.setItem("theme", newTheme);
+	};
 
 	const {
 		files,
@@ -41,54 +64,7 @@ export default function App() {
 		return () => document.removeEventListener("keydown", onKey);
 	}, []);
 
-	const commands = useMemo(
-		() => [
-			{
-				id: "open-contact",
-				title: "Open contact.json",
-				action: () => openFile("contact.json"),
-				keywords: ["file", "contact"],
-			},
-			{
-				id: "open-projects",
-				title: "Open projects.md",
-				action: () => openFile("projects.md"),
-				keywords: ["file", "projects"],
-			},
-			{
-				id: "open-experience",
-				title: "Open experience.md",
-				action: () => openFile("experience.md"),
-				keywords: ["file", "experience"],
-			},
-			{
-				id: "theme-dark",
-				title: "Theme: Dark",
-				action: () => setTheme("dark"),
-				keywords: ["theme"],
-			},
-			{
-				id: "theme-light",
-				title: "Theme: Light",
-				action: () => setTheme("light"),
-				keywords: ["theme"],
-			},
-			{
-				id: "theme-hc",
-				title: "Theme: High Contrast",
-				action: () => setTheme("hc"),
-				keywords: ["theme", "accessibility"],
-			},
-			{
-				id: "easter-egg",
-				title: "Hire and pay lots of money",
-				subtitle: "A friendly suggestion",
-				action: () => alert("Hire and pay lots of money ✨"),
-				keywords: ["easter egg", "fun"],
-			},
-		],
-		[openFile]
-	);
+	const commands = useCommands(openFile, setTheme);
 
 	return (
 		<div className={`h-screen font-mono flex flex-col ${t.appBg}`}>
@@ -127,7 +103,7 @@ export default function App() {
 
 					<EditorPane file={file} monacoTheme={t.monaco} />
 
-					<TerminalPane t={t} />
+					<TerminalPane t={t} theme={theme} />
 				</main>
 			</div>
 
