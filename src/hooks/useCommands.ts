@@ -40,7 +40,6 @@ export default function useCommands(
         action: () => setTheme("light"),
         keywords: ["theme"],
       },
-      // Removed HC theme command; only light/dark supported
       ...(openTerminal
         ? [
             {

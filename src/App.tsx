@@ -12,6 +12,10 @@ import CommandPalette from "./components/CommandPalette";
 import useCommands from "./hooks/useCommands";
 import Toast from "./components/Toast";
 import Confetti from "./components/Confetti";
+import useAchievements from "./hooks/useAchievements";
+import AchievementNotification from "./components/AchievementNotification";
+import AchievementsView from "./components/AchievementsView";
+import Landing from "./components/Landing";
 
 export default function App() {
   const getInitialTheme = (): ThemeKey => {
@@ -34,20 +38,43 @@ export default function App() {
   const [showTerminal, setShowTerminal] = useState(true);
   const [showThemeTip, setShowThemeTip] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const terminalCommandRef = useRef<((cmd: string, skipEcho?: boolean) => void) | null>(null);
+
+  const achievements = useAchievements();
 
   // Wrapper to save theme to localStorage
   const setTheme = (newTheme: ThemeKey) => {
     setThemeState(newTheme);
     localStorage.setItem("theme", newTheme);
+    achievements.trackThemeSwitch();
     // Hide the tip if it's currently shown
     if (showThemeTip) {
       setShowThemeTip(false);
     }
   };
 
-  const { files, openTabs, activeFile, openFile, closeTab, setActiveFile, setOpenTabs } =
-    useFiles();
+  const {
+    files,
+    openTabs,
+    activeFile,
+    openFile: openFileBase,
+    closeTab,
+    setActiveFile,
+    setOpenTabs,
+  } = useFiles();
+
+  // Wrap openFile to track achievements
+  const openFile = useCallback(
+    (filename: string) => {
+      openFileBase(filename);
+      achievements.trackFileOpen(filename);
+      setShowAchievements(false);
+      setShowLanding(false);
+    },
+    [openFileBase, achievements]
+  );
 
   const file = files[activeFile as keyof typeof files];
 
@@ -76,7 +103,8 @@ export default function App() {
   // Just show confetti (for terminal typed command)
   const handleShowConfetti = useCallback(() => {
     setShowConfetti(true);
-  }, []);
+    achievements.trackHire();
+  }, [achievements]);
 
   // Show confetti + add terminal output (for palette command)
   const handleHire = useCallback(() => {
@@ -102,14 +130,29 @@ export default function App() {
         onLogoClick={() => {
           setActiveFile("");
           setOpenTabs([]);
+          setShowAchievements(false);
+          setShowLanding(true);
         }}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           t={t}
-          isExplorerActive={!!activeFile}
+          isExplorerActive={showLanding}
+          isAchievementsActive={showAchievements}
           onOpenTerminal={() => setShowTerminal(true)}
+          onOpenExplorer={() => {
+            setShowLanding(true);
+            setShowAchievements(false);
+            setActiveFile("");
+            setOpenTabs([]);
+          }}
+          onOpenAchievements={() => {
+            setShowAchievements(true);
+            setShowLanding(false);
+            setActiveFile("");
+            setOpenTabs([]);
+          }}
         />
 
         <Explorer files={files} openFile={openFile} activeFile={activeFile} t={t} />
@@ -123,11 +166,22 @@ export default function App() {
             t={t}
           />
 
-          <EditorPane
-            file={file}
-            monacoTheme={t.monaco}
-            onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
-          />
+          {showLanding ? (
+            <Landing
+              onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
+            />
+          ) : showAchievements ? (
+            <AchievementsView
+              unlocked={achievements.progress.unlocked}
+              progress={achievements.progress}
+            />
+          ) : (
+            <EditorPane
+              file={file}
+              monacoTheme={t.monaco}
+              onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
+            />
+          )}
 
           {showTerminal && (
             <TerminalPane
@@ -137,6 +191,9 @@ export default function App() {
               onHire={handleShowConfetti}
               commandRef={terminalCommandRef}
               onOpenFile={openFile}
+              onCommand={achievements.trackTerminalCommand}
+              onClearAchievements={achievements.clearAllAchievements}
+              onUnlockAll={achievements.unlockAllAchievements}
             />
           )}
         </main>
@@ -158,9 +215,15 @@ export default function App() {
         commands={commands}
         t={t}
         anchorRect={anchorRect ?? undefined}
+        onCommandExecute={achievements.trackPaletteCommand}
       />
 
       <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
+
+      <AchievementNotification
+        achievement={achievements.recentUnlock}
+        onClose={achievements.clearRecentUnlock}
+      />
     </div>
   );
 }

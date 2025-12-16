@@ -8,6 +8,9 @@ export default function TerminalPane({
   onHire,
   commandRef,
   onOpenFile,
+  onCommand,
+  onClearAchievements,
+  onUnlockAll,
 }: {
   t: { terminalBg: string };
   theme?: string;
@@ -15,8 +18,17 @@ export default function TerminalPane({
   onHire?: () => void;
   commandRef?: React.MutableRefObject<((cmd: string, skipEcho?: boolean) => void) | null>;
   onOpenFile?: (file: string) => void;
+  onCommand?: (cmd: string) => void;
+  onClearAchievements?: () => void;
+  onUnlockAll?: () => void;
 }) {
-  const { lines, input, setInput, handleKeyDown, handleCommand } = useTerminal(theme, onHire);
+  const { lines, input, setInput, handleKeyDown, handleCommand } = useTerminal(
+    theme,
+    onHire,
+    onCommand,
+    onClearAchievements,
+    onUnlockAll
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 

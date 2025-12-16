@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { TerminalLine } from "../types";
-import { SUCCESS_MSG, WARNING_MSG, WHY_MSG } from "../constants/terminal";
+import { SUCCESS_MSG, WARNING_MSG, WHY_MSG, HIRE_SUCCESS_MSG, HIRE_CONTACT_MSG } from "../constants/terminal";
 
-export default function useTerminal(theme?: string, onHire?: () => void) {
+export default function useTerminal(
+  theme?: string,
+  onHire?: () => void,
+  onCommand?: (cmd: string) => void,
+  onClearAchievements?: () => void,
+  onUnlockAll?: () => void
+) {
   const [lines, setLines] = useState<TerminalLine[]>([
     { type: "output", content: "Last login: just now" },
   ]);
@@ -100,8 +106,26 @@ export default function useTerminal(theme?: string, onHire?: () => void) {
         }
         return [
           ...next,
-          { type: "output", content: "🎉 Excellent choice! Let's make something amazing together!" },
-          { type: "output", content: "📧 Reach out at: [[contact.json]]" },
+          { type: "output", content: HIRE_SUCCESS_MSG },
+          { type: "output", content: HIRE_CONTACT_MSG },
+        ];
+      }
+      if (trimmed === "clearachievements") {
+        if (onClearAchievements) {
+          onClearAchievements();
+        }
+        return [
+          ...next,
+          { type: "output", content: "All achievements cleared." },
+        ];
+      }
+      if (trimmed === "allachievements") {
+        if (onUnlockAll) {
+          onUnlockAll();
+        }
+        return [
+          ...next,
+          { type: "output", content: "All achievements unlocked!" },
         ];
       }
       if (trimmed === "") {
@@ -118,7 +142,10 @@ export default function useTerminal(theme?: string, onHire?: () => void) {
     setHistory((prev) => [...prev, cmd]);
     setHistoryIndex(-1);
     setInput("");
-  }, [onHire]);
+    if (onCommand && cmd.trim()) {
+      onCommand(cmd.trim());
+    }
+  }, [onHire, onCommand, onClearAchievements, onUnlockAll]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
