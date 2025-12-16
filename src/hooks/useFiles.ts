@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FileMap } from "../types";
 import useGitHubRepo from "./useGitHubRepo";
+import { GITHUB_PLACEHOLDER_TEXT } from "../constants/files";
 
 export default function useFiles(onOpenTerminal?: () => void) {
   const [files, setFiles] = useState<FileMap>({});
@@ -67,7 +68,7 @@ export default function useFiles(onOpenTerminal?: () => void) {
       );
 
       // Add a placeholder for the GitHub folder
-      results["GitHub/.placeholder"] = { language: "text", value: "Loading..." };
+      results["GitHub/.placeholder"] = { language: "text", value: GITHUB_PLACEHOLDER_TEXT };
 
       setFiles(results);
     };
