@@ -8,7 +8,13 @@ export default function useFiles() {
   useEffect(() => {
     const modules = import.meta.glob("../files/*", { as: "raw" });
     const load = async () => {
-      const entries = Object.entries(modules) as [string, () => Promise<string>][];
+      let entries = Object.entries(modules) as [string, () => Promise<string>][];
+      // Sort entries by filename for consistent ordering
+      entries = entries.sort((a, b) => {
+        const nameA = a[0].split("/").pop() || "";
+        const nameB = b[0].split("/").pop() || "";
+        return nameA.localeCompare(nameB);
+      });
       const results: Record<string, { language: string; value: string }> = {};
 
       await Promise.all(
