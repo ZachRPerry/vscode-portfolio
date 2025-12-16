@@ -102,7 +102,7 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           t={t}
-          isExplorerActive={view.showLanding}
+          isExplorerActive={!view.showAchievements}
           isAchievementsActive={view.showAchievements}
           onOpenTerminal={() => view.setShowTerminal(true)}
           onOpenExplorer={() => {
