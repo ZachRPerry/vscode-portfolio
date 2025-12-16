@@ -1,66 +1,44 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import Explorer from "./components/Explorer";
-import Tabs from "./components/Tabs";
-import EditorPane from "./components/EditorPane";
-import TerminalPane from "./components/TerminalPane";
-import Footer from "./components/Footer";
-import { themes, ThemeKey } from "./theme";
-import useFiles from "./hooks/useFiles";
-import CommandPalette from "./components/CommandPalette";
-import useCommands from "./hooks/useCommands";
-import Toast from "./components/Toast";
-import Confetti from "./components/Confetti";
-import useAchievements from "./hooks/useAchievements";
-import AchievementNotification from "./components/AchievementNotification";
-import AchievementsView from "./components/AchievementsView";
-import Landing from "./components/Landing";
+import { useCallback, useRef } from "react";
+import { themes } from "./theme";
+import {
+  useAchievements,
+  useAppEffects,
+  useCommands,
+  useFiles,
+  useTheme,
+  useViewState,
+} from "./hooks";
+import {
+  AchievementNotification,
+  AchievementsView,
+  CommandPalette,
+  Confetti,
+  EditorPane,
+  Explorer,
+  Footer,
+  Header,
+  Landing,
+  Sidebar,
+  Tabs,
+  TerminalPane,
+  Toast,
+} from "./components";
 
 export default function App() {
-  const getInitialTheme = (): ThemeKey => {
-    // Check localStorage first
-    const saved = localStorage.getItem("theme") as ThemeKey | null;
-    if (saved && (saved === "dark" || saved === "light")) {
-      return saved;
-    }
-    // Fall back to device theme
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-      return "light";
-    }
-    return "dark";
-  };
-
-  const [theme, setThemeState] = useState<ThemeKey>(getInitialTheme());
-  const t = themes[theme];
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-  const [showTerminal, setShowTerminal] = useState(true);
-  const [showThemeTip, setShowThemeTip] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
-  const [savedEditorState, setSavedEditorState] = useState<{
-    activeFile: string;
-    openTabs: string[];
-  }>({
-    activeFile: "",
-    openTabs: [],
-  });
+  const { theme, t, setTheme: setThemeBase } = useTheme();
+  const view = useViewState();
+  const achievements = useAchievements();
   const terminalCommandRef = useRef<((cmd: string, skipEcho?: boolean) => void) | null>(null);
 
-  const achievements = useAchievements();
-
-  // Wrapper to save theme to localStorage
-  const setTheme = (newTheme: ThemeKey) => {
-    setThemeState(newTheme);
-    localStorage.setItem("theme", newTheme);
-    achievements.trackThemeSwitch();
-    // Hide the tip if it's currently shown
-    if (showThemeTip) {
-      setShowThemeTip(false);
-    }
-  };
+  // Wrap setTheme to include achievement tracking
+  const setTheme = useCallback(
+    (newTheme: typeof theme) => {
+      setThemeBase(newTheme, view.showThemeTip, view.setShowThemeTip, () => {
+        achievements.trackThemeSwitch();
+      });
+    },
+    [setThemeBase, view.showThemeTip, view.setShowThemeTip, achievements]
+  );
 
   const {
     files,
@@ -71,57 +49,36 @@ export default function App() {
     setActiveFile,
     setOpenTabs,
   } = useFiles();
+  const file = files[activeFile as keyof typeof files];
 
-  // Wrap openFile to track achievements
+  // Wrap openFile to track achievements and hide views
   const openFile = useCallback(
     (filename: string) => {
       openFileBase(filename);
       achievements.trackFileOpen(filename);
-      setShowAchievements(false);
-      setShowLanding(false);
+      view.setShowAchievements(false);
+      view.setShowLanding(false);
     },
-    [openFileBase, achievements]
+    [openFileBase, achievements, view]
   );
 
-  const file = files[activeFile as keyof typeof files];
+  // Register all app-level effects
+  useAppEffects(achievements, theme, view.showThemeTip, view.setShowThemeTip, view.setPaletteOpen);
 
-  // Global hotkeys for command palette (Ctrl+Shift+P or F1)
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
-      if ((e.ctrlKey && e.shiftKey && key === "p") || key === "f1") {
-        e.preventDefault();
-        setPaletteOpen(true);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
-
-  // On every page load, show the tip if starting in light mode
-  useEffect(() => {
-    if (theme === "light") {
-      setShowThemeTip(true);
-    }
-  }, []);
-
-  const openTerminal = () => setShowTerminal(true);
-
-  // Just show confetti (for terminal typed command)
+  // Callbacks for confetti
   const handleShowConfetti = useCallback(() => {
-    setShowConfetti(true);
+    view.setShowConfetti(true);
     achievements.trackHire();
-  }, [achievements]);
+  }, [view, achievements]);
 
-  // Show confetti + add terminal output (for palette command)
   const handleHire = useCallback(() => {
-    setShowConfetti(true);
+    view.setShowConfetti(true);
     if (terminalCommandRef.current) {
-      terminalCommandRef.current("hire", true); // skipEcho = true for palette
+      terminalCommandRef.current("hire", true);
     }
-  }, []);
+  }, [view]);
 
-  const commands = useCommands(openFile, setTheme, openTerminal, handleHire);
+  const commands = useCommands(openFile, setTheme, () => view.setShowTerminal(true), handleHire);
 
   return (
     <div className={`h-screen font-mono flex flex-col ${t.appBg}`}>
@@ -129,38 +86,35 @@ export default function App() {
         theme={theme}
         setTheme={setTheme}
         t={t}
-        showThemeTip={showThemeTip}
+        showThemeTip={view.showThemeTip}
         onOpenPalette={(rect) => {
-          setAnchorRect(rect);
-          setPaletteOpen(true);
+          view.setAnchorRect(rect);
+          view.setPaletteOpen(true);
         }}
         onLogoClick={() => {
           setActiveFile("");
           setOpenTabs([]);
-          setShowAchievements(false);
-          setShowLanding(true);
+          view.setShowAchievements(false);
+          view.setShowLanding(true);
         }}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           t={t}
-          isExplorerActive={showLanding}
-          isAchievementsActive={showAchievements}
-          onOpenTerminal={() => setShowTerminal(true)}
+          isExplorerActive={view.showLanding}
+          isAchievementsActive={view.showAchievements}
+          onOpenTerminal={() => view.setShowTerminal(true)}
           onOpenExplorer={() => {
-            setShowAchievements(false);
-            // Always restore saved editor state (coming from achievements)
-            setActiveFile(savedEditorState.activeFile);
-            setOpenTabs(savedEditorState.openTabs);
-            // Only show landing if no files were saved
-            setShowLanding(!savedEditorState.activeFile);
+            view.setShowAchievements(false);
+            setActiveFile(view.savedEditorState.activeFile);
+            setOpenTabs(view.savedEditorState.openTabs);
+            view.setShowLanding(!view.savedEditorState.activeFile);
           }}
           onOpenAchievements={() => {
-            // Save current editor state before switching away
-            setSavedEditorState({ activeFile, openTabs });
-            setShowAchievements(true);
-            setShowLanding(false);
+            view.setSavedEditorState({ activeFile, openTabs });
+            view.setShowAchievements(true);
+            view.setShowLanding(false);
             setActiveFile("");
             setOpenTabs([]);
           }}
@@ -177,11 +131,11 @@ export default function App() {
             t={t}
           />
 
-          {showLanding ? (
+          {view.showLanding ? (
             <Landing
               onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
             />
-          ) : showAchievements ? (
+          ) : view.showAchievements ? (
             <AchievementsView
               unlocked={achievements.progress.unlocked}
               progress={achievements.progress}
@@ -194,11 +148,11 @@ export default function App() {
             />
           )}
 
-          {showTerminal && (
+          {view.showTerminal && (
             <TerminalPane
               t={t}
               theme={theme}
-              onClose={() => setShowTerminal(false)}
+              onClose={() => view.setShowTerminal(false)}
               onHire={handleShowConfetti}
               commandRef={terminalCommandRef}
               onOpenFile={openFile}
@@ -213,23 +167,23 @@ export default function App() {
       <Footer />
 
       <Toast
-        open={showThemeTip}
-        onClose={() => setShowThemeTip(false)}
+        open={view.showThemeTip}
+        onClose={() => view.setShowThemeTip(false)}
         title="Tip"
         message="Click the lightbulb to switch to dark mode."
         theme={theme}
       />
 
       <CommandPalette
-        open={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
+        open={view.paletteOpen}
+        onClose={() => view.setPaletteOpen(false)}
         commands={commands}
         t={t}
-        anchorRect={anchorRect ?? undefined}
+        anchorRect={view.anchorRect ?? undefined}
         onCommandExecute={achievements.trackPaletteCommand}
       />
 
-      <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
+      <Confetti active={view.showConfetti} onComplete={() => view.setShowConfetti(false)} />
 
       <AchievementNotification
         achievement={achievements.recentUnlock}

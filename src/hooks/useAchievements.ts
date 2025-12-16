@@ -181,3 +181,5 @@ export default function useAchievements() {
     unlockAllAchievements,
   };
 }
+
+export type Achievements = ReturnType<typeof useAchievements>;
