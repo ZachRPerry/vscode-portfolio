@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { TerminalLine } from "../types";
 import { SUCCESS_MSG, WARNING_MSG, WHY_MSG } from "../constants/terminal";
 
-export default function useTerminal(theme?: string) {
+export default function useTerminal(theme?: string, onHire?: () => void) {
   const [lines, setLines] = useState<TerminalLine[]>([
     { type: "output", content: "Last login: just now" },
   ]);
@@ -28,20 +28,17 @@ export default function useTerminal(theme?: string) {
     const prev = prevThemeRef.current;
     if (prev && prev !== theme) {
       if (prev === "dark" && theme === "light") {
-        setLines((prevLines) => [
-          ...prevLines,
-          { type: "output", content: WHY_MSG },
-        ]);
-        // Add the regular warning if not already present
         setLines((prevLines) => {
-          if (
-            prevLines.some(
-              (l) => l.type === "output" && l.content === WARNING_MSG
-            )
-          ) {
-            return prevLines;
-          }
-          return [...prevLines, { type: "output", content: WARNING_MSG }];
+          const hasWarning = prevLines.some(
+            (l) => l.type === "output" && l.content === WARNING_MSG
+          );
+          return hasWarning
+            ? [...prevLines, { type: "output", content: WHY_MSG }]
+            : [
+                ...prevLines,
+                { type: "output", content: WHY_MSG },
+                { type: "output", content: WARNING_MSG },
+              ];
         });
       }
       if (prev === "light" && theme === "dark") {
@@ -60,10 +57,10 @@ export default function useTerminal(theme?: string) {
     prevThemeRef.current = theme;
   }, [theme]);
 
-  const handleCommand = (cmd: string) => {
+  const handleCommand = useCallback((cmd: string, skipEcho = false) => {
     const trimmed = cmd.trim().toLowerCase();
     setLines((prev) => {
-      const next: TerminalLine[] = [...prev, { type: "command", content: cmd }];
+      const next: TerminalLine[] = skipEcho ? [...prev] : [...prev, { type: "command", content: cmd }];
       if (trimmed === "clear" || trimmed === "cls") {
         return [{ type: "output", content: "Last login: just now" }];
       }
@@ -72,7 +69,7 @@ export default function useTerminal(theme?: string) {
           ...next,
           {
             type: "output",
-            content: "Available commands: npm, npm run dev, npm run build, help, clear",
+            content: "Available commands: npm, npm run dev, npm run build, hire, help, clear",
           },
         ];
       }
@@ -96,6 +93,17 @@ export default function useTerminal(theme?: string) {
           { type: "output", content: "✓ 1234 modules transformed." },
         ];
       }
+      if (trimmed === "hire") {
+        // Trigger callback to show confetti
+        if (onHire) {
+          setTimeout(() => onHire(), 0);
+        }
+        return [
+          ...next,
+          { type: "output", content: "🎉 Excellent choice! Let's make something amazing together!" },
+          { type: "output", content: "📧 Reach out at: [[contact.json]]" },
+        ];
+      }
       if (trimmed === "") {
         return next;
       }
@@ -110,7 +118,7 @@ export default function useTerminal(theme?: string) {
     setHistory((prev) => [...prev, cmd]);
     setHistoryIndex(-1);
     setInput("");
-  };
+  }, [onHire]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

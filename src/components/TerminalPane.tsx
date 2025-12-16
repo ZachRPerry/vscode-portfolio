@@ -5,14 +5,49 @@ export default function TerminalPane({
   t,
   theme,
   onClose,
+  onHire,
+  commandRef,
+  onOpenFile,
 }: {
   t: { terminalBg: string };
   theme?: string;
   onClose?: () => void;
+  onHire?: () => void;
+  commandRef?: React.MutableRefObject<((cmd: string, skipEcho?: boolean) => void) | null>;
+  onOpenFile?: (file: string) => void;
 }) {
-  const { lines, input, setInput, handleKeyDown, handleCommand } = useTerminal(theme);
+  const { lines, input, setInput, handleKeyDown, handleCommand } = useTerminal(theme, onHire);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Expose handleCommand via ref (using layout effect to set synchronously)
+  useEffect(() => {
+    if (commandRef) {
+      commandRef.current = handleCommand;
+    }
+  }, [handleCommand, commandRef]);
+
+  // Parse content with [[filename]] markers into clickable links
+  const renderContent = (content: string) => {
+    const parts = content.split(/\[\[(.+?)\]\]/);
+    return parts.map((part, idx) => {
+      // Odd indices are the captured groups (filenames)
+      if (idx % 2 === 1 && onOpenFile) {
+        return (
+          <button
+            key={idx}
+            onClick={() => onOpenFile(part)}
+            className={`underline hover:opacity-80 cursor-pointer ${
+              isLight ? "text-blue-700" : "text-blue-400"
+            }`}
+          >
+            {part}
+          </button>
+        );
+      }
+      return part;
+    });
+  };
 
   const isLight = theme === "light";
   const rootBg = isLight ? "bg-[#f3f3f3] text-[#1e1e1e]" : "bg-[#0b0b0b] text-gray-200";
@@ -36,7 +71,7 @@ export default function TerminalPane({
 
   return (
     <div
-      className={`h-40 font-mono text-sm flex flex-col ${t.terminalBg} ${separatorBorder} ${
+      className={`h-[200px] flex-shrink-0 font-mono text-sm flex flex-col ${t.terminalBg} ${separatorBorder} ${
         isLight ? "text-[#1e1e1e]" : "text-gray-200"
       }`}
     >
@@ -91,7 +126,7 @@ export default function TerminalPane({
                         : "text-gray-500"
                 }
               >
-                {line.content}
+                {renderContent(line.content)}
               </div>
             )}
           </div>

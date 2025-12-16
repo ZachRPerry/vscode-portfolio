@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Explorer from "./components/Explorer";
@@ -11,6 +11,7 @@ import useFiles from "./hooks/useFiles";
 import CommandPalette from "./components/CommandPalette";
 import useCommands from "./hooks/useCommands";
 import Toast from "./components/Toast";
+import Confetti from "./components/Confetti";
 
 export default function App() {
   const getInitialTheme = (): ThemeKey => {
@@ -32,6 +33,8 @@ export default function App() {
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showThemeTip, setShowThemeTip] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const terminalCommandRef = useRef<((cmd: string, skipEcho?: boolean) => void) | null>(null);
 
   // Wrapper to save theme to localStorage
   const setTheme = (newTheme: ThemeKey) => {
@@ -69,7 +72,21 @@ export default function App() {
   }, []);
 
   const openTerminal = () => setShowTerminal(true);
-  const commands = useCommands(openFile, setTheme, openTerminal);
+
+  // Just show confetti (for terminal typed command)
+  const handleShowConfetti = useCallback(() => {
+    setShowConfetti(true);
+  }, []);
+
+  // Show confetti + add terminal output (for palette command)
+  const handleHire = useCallback(() => {
+    setShowConfetti(true);
+    if (terminalCommandRef.current) {
+      terminalCommandRef.current("hire", true); // skipEcho = true for palette
+    }
+  }, []);
+
+  const commands = useCommands(openFile, setTheme, openTerminal, handleHire);
 
   return (
     <div className={`h-screen font-mono flex flex-col ${t.appBg}`}>
@@ -78,7 +95,6 @@ export default function App() {
         setTheme={setTheme}
         t={t}
         showThemeTip={showThemeTip}
-        onDismissThemeTip={() => setShowThemeTip(false)}
         onOpenPalette={(rect) => {
           setAnchorRect(rect);
           setPaletteOpen(true);
@@ -114,7 +130,14 @@ export default function App() {
           />
 
           {showTerminal && (
-            <TerminalPane t={t} theme={theme} onClose={() => setShowTerminal(false)} />
+            <TerminalPane
+              t={t}
+              theme={theme}
+              onClose={() => setShowTerminal(false)}
+              onHire={handleShowConfetti}
+              commandRef={terminalCommandRef}
+              onOpenFile={openFile}
+            />
           )}
         </main>
       </div>
@@ -136,6 +159,8 @@ export default function App() {
         t={t}
         anchorRect={anchorRect ?? undefined}
       />
+
+      <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
     </div>
   );
 }

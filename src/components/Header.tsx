@@ -7,7 +7,6 @@ export default function Header({
   setTheme,
   t,
   showThemeTip,
-  onDismissThemeTip,
   onOpenPalette,
   onLogoClick,
 }: {
@@ -17,7 +16,6 @@ export default function Header({
   onOpenPalette: (anchor: DOMRect) => void;
   onLogoClick: () => void;
   showThemeTip?: boolean;
-  onDismissThemeTip?: () => void;
 }) {
   const isLight = theme === "light";
   const boxBg = isLight ? "bg-white text-[#1e1e1e]" : "bg-[#2a2d2e] text-[#cccccc]";

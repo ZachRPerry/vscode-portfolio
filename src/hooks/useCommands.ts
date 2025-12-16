@@ -5,7 +5,8 @@ import type { ThemeKey } from "../theme";
 export default function useCommands(
   openFile: (f: string) => void,
   setTheme: (t: ThemeKey) => void,
-  openTerminal?: () => void
+  openTerminal?: () => void,
+  onHire?: () => void
 ): Command[] {
   return useMemo<Command[]>(
     () => [
@@ -50,14 +51,18 @@ export default function useCommands(
             } as Command,
           ]
         : []),
-      {
-        id: "easter-egg",
-        title: "Hire and pay lots of money",
-        subtitle: "A friendly suggestion",
-        action: () => alert("Hire and pay lots of money ✨"),
-        keywords: ["easter egg", "fun"],
-      },
+      ...(onHire
+        ? [
+            {
+              id: "hire-me",
+              title: "🎉 Hire Me!",
+              subtitle: "Let's work together",
+              action: () => onHire(),
+              keywords: ["hire", "contact", "job", "work"],
+            } as Command,
+          ]
+        : []),
     ],
-    [openFile, setTheme, openTerminal]
+    [openFile, setTheme, openTerminal, onHire]
   );
 }
