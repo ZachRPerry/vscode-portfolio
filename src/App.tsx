@@ -1,5 +1,4 @@
-import { useCallback, useRef } from "react";
-import { themes } from "./theme";
+import { useCallback, useEffect, useRef } from "react";
 import {
   useAchievements,
   useAppEffects,
@@ -48,6 +47,8 @@ export default function App() {
     closeTab,
     setActiveFile,
     setOpenTabs,
+    enableGitHub,
+    setTerminalCommandRef,
   } = useFiles();
   const file = files[activeFile as keyof typeof files];
 
@@ -64,6 +65,13 @@ export default function App() {
 
   // Register all app-level effects
   useAppEffects(achievements, theme, view.showThemeTip, view.setShowThemeTip, view.setPaletteOpen);
+
+  // Connect terminal command ref to useFiles for GitHub errors
+  useEffect(() => {
+    if (terminalCommandRef.current) {
+      setTerminalCommandRef(terminalCommandRef.current);
+    }
+  }, [terminalCommandRef.current, setTerminalCommandRef]);
 
   // Callbacks for confetti
   const handleShowConfetti = useCallback(() => {
@@ -120,7 +128,13 @@ export default function App() {
           }}
         />
 
-        <Explorer files={files} openFile={openFile} activeFile={activeFile} t={t} />
+        <Explorer
+          files={files}
+          openFile={openFile}
+          activeFile={activeFile}
+          t={t}
+          onGitHubExpand={enableGitHub}
+        />
 
         <main className="flex-1 flex flex-col">
           <Tabs

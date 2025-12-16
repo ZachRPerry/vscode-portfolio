@@ -13,7 +13,15 @@ function buildFileTree(files: FileMap): FileNode[] {
   const root: FileNode[] = [];
   const folderMap = new Map<string, FileNode>();
 
-  const fileNames = Object.keys(files).sort();
+  // Sort files, but put GitHub folder at the end
+  const fileNames = Object.keys(files).sort((a, b) => {
+    const aIsGitHub = a.startsWith("GitHub/");
+    const bIsGitHub = b.startsWith("GitHub/");
+
+    if (aIsGitHub && !bIsGitHub) return 1; // GitHub goes after
+    if (!aIsGitHub && bIsGitHub) return -1; // Non-GitHub goes before
+    return a.localeCompare(b); // Otherwise alphabetical
+  });
 
   for (const filePath of fileNames) {
     const parts = filePath.split("/");
@@ -61,6 +69,7 @@ function FileTreeNode({
   itemHover,
   isLight,
   level = 0,
+  onGitHubExpand,
 }: {
   node: FileNode;
   openFile: (f: string) => void;
@@ -69,8 +78,16 @@ function FileTreeNode({
   itemHover: string;
   isLight: boolean;
   level?: number;
+  onGitHubExpand?: () => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleToggle = () => {
+    if (!isExpanded && node.name === "GitHub" && onGitHubExpand) {
+      onGitHubExpand();
+    }
+    setIsExpanded(!isExpanded);
+  };
 
   if (node.type === "file") {
     return (
@@ -90,7 +107,7 @@ function FileTreeNode({
   return (
     <div>
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
         className={`cursor-pointer px-2 py-1 rounded flex items-center ${itemHover}`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
       >
@@ -121,6 +138,7 @@ function FileTreeNode({
               itemHover={itemHover}
               isLight={isLight}
               level={level + 1}
+              onGitHubExpand={onGitHubExpand}
             />
           ))}
         </div>
@@ -134,11 +152,13 @@ export default function Explorer({
   openFile,
   activeFile,
   t,
+  onGitHubExpand,
 }: {
   files: FileMap;
   openFile: (f: string) => void;
   activeFile: string;
   t: { explorerBg: string; monaco?: string };
+  onGitHubExpand?: () => void;
 }) {
   const isLight = t.monaco === "vs";
   const itemActive = isLight ? "bg-[#e2e2e2]" : "bg-[#373737]";
@@ -157,6 +177,7 @@ export default function Explorer({
           itemActive={itemActive}
           itemHover={itemHover}
           isLight={isLight}
+          onGitHubExpand={onGitHubExpand}
         />
       ))}
     </aside>

@@ -3,6 +3,7 @@ export { default as useAppCallbacks } from "./useAppCallbacks";
 export { default as useAppEffects } from "./useAppEffects";
 export { default as useCommands } from "./useCommands";
 export { default as useFiles } from "./useFiles";
+export { default as useGitHubRepo } from "./useGitHubRepo";
 export { default as useTerminal } from "./useTerminal";
 export { default as useTheme } from "./useTheme";
 export { default as useViewState } from "./useViewState";

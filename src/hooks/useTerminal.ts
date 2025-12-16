@@ -64,6 +64,7 @@ export default function useTerminal(
   }, [theme]);
 
   const handleCommand = useCallback((cmd: string, skipEcho = false) => {
+    if (!cmd) return; // Guard against null/undefined
     const trimmed = cmd.trim().toLowerCase();
     setLines((prev) => {
       // Add command and blank line

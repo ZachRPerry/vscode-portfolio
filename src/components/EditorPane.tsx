@@ -25,10 +25,19 @@ export default function EditorPane({
         value={file.value}
         options={{
           readOnly: true,
-          minimap: { enabled: true },
+          minimap: {
+            enabled: true,
+            side: "right",
+            showSlider: "mouseover",
+            renderCharacters: true,
+            maxColumn: 120,
+            scale: 1,
+          },
           lineNumbers: "on",
           fontSize: 14,
           wordWrap: "on",
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
         }}
       />
     </div>

@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import type { FileMap } from "../types";
+import useGitHubRepo from "./useGitHubRepo";
 
 export default function useFiles() {
   const [files, setFiles] = useState<FileMap>({});
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
+  const [githubEnabled, setGithubEnabled] = useState(false);
+  const [terminalCommandRef, setTerminalCommandRef] = useState<((cmd: string, skipEcho?: boolean) => void) | null>(null);
+  const { files: githubFiles, error: githubError } = useGitHubRepo("zachrperry", "vscode-portfolio", githubEnabled);
+
+  // Send GitHub error to terminal when it occurs
+  useEffect(() => {
+    if (githubError && terminalCommandRef) {
+      terminalCommandRef(`echo "❌ GitHub API Error: ${githubError}"`, true);
+    }
+  }, [githubError, terminalCommandRef]);
 
   useEffect(() => {
     const modules = import.meta.glob("../files/**/*", { as: "raw" });
@@ -41,11 +52,25 @@ export default function useFiles() {
         })
       );
 
+      // Add a placeholder for the GitHub folder
+      results["GitHub/.placeholder"] = { language: "text", value: "Loading..." };
+
       setFiles(results);
     };
 
     load();
   }, []);
+
+  // Merge GitHub files when they're loaded
+  useEffect(() => {
+    if (Object.keys(githubFiles).length > 0) {
+      setFiles((prev) => {
+        // Remove placeholder and add GitHub files
+        const { "GitHub/.placeholder": _, ...rest } = prev;
+        return { ...rest, ...githubFiles };
+      });
+    }
+  }, [githubFiles]);
 
   const openFile = (file: string) => {
     if (!openTabs.includes(file)) setOpenTabs((prev) => [...prev, file]);
@@ -70,5 +95,7 @@ export default function useFiles() {
     closeTab,
     setOpenTabs,
     setActiveFile,
+    enableGitHub: () => setGithubEnabled(true),
+    setTerminalCommandRef,
   } as const;
 }
