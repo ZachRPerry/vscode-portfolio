@@ -1,5 +1,5 @@
 import React from "react";
-import CodeIcon from "../icons/CodeIcon";
+import { getFileIcon } from "../utils/fileIcons";
 
 export default function Tabs({
   openTabs,
@@ -24,8 +24,8 @@ export default function Tabs({
             tab === activeFile ? t.tabActive : t.tabInactive
           }`}
         >
-          <CodeIcon className="w-4 h-4 mr-2" />
-          {tab}
+          {getFileIcon(tab)}
+          {tab.split("/").pop()}
           <span
             className="ml-2 text-xs hover:text-red-400"
             onClick={(e) => {

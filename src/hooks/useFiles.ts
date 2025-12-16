@@ -7,22 +7,17 @@ export default function useFiles() {
   const [activeFile, setActiveFile] = useState<string>("");
 
   useEffect(() => {
-    const modules = import.meta.glob("../files/*", { as: "raw" });
+    const modules = import.meta.glob("../files/**/*", { as: "raw" });
     const load = async () => {
       let entries = Object.entries(modules) as [string, () => Promise<string>][];
-      // Sort entries by filename for consistent ordering
-      entries = entries.sort((a, b) => {
-        const nameA = a[0].split("/").pop() || "";
-        const nameB = b[0].split("/").pop() || "";
-        return nameA.localeCompare(nameB);
-      });
       const results: Record<string, { language: string; value: string }> = {};
 
       await Promise.all(
         entries.map(async ([path, loader]) => {
           const content = await loader();
-          const name = path.split("/").pop() || path;
-          const ext = name.split(".").pop()?.toLowerCase();
+          // Extract the relative path from ../files/
+          const relativePath = path.replace(/^.*\/files\//, "");
+          const ext = relativePath.split(".").pop()?.toLowerCase();
           let language: string;
           switch (ext) {
             case "md":
@@ -42,7 +37,7 @@ export default function useFiles() {
               language = "text";
           }
 
-          results[name] = { language, value: content };
+          results[relativePath] = { language, value: content };
         })
       );
 
