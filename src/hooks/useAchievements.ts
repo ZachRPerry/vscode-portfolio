@@ -12,7 +12,7 @@ type AchievementProgress = {
 
 const STORAGE_KEY = "achievements";
 
-export default function useAchievements() {
+export default function useAchievements(onUnlock?: (achievementId: AchievementId) => void) {
   const [progress, setProgress] = useState<AchievementProgress>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -59,9 +59,13 @@ export default function useAchievements() {
       const newUnlocked = new Set(prev.unlocked);
       newUnlocked.add(achievementId);
       setRecentUnlock(ACHIEVEMENTS[achievementId]);
+      // Call onUnlock callback for confetti or other effects
+      if (onUnlock) {
+        onUnlock(achievementId);
+      }
       return { ...prev, unlocked: newUnlocked };
     });
-  }, []);
+  }, [onUnlock]);
 
   const trackFileOpen = useCallback(
     (filename: string) => {

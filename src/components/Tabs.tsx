@@ -1,4 +1,3 @@
-import React from "react";
 import { getFileIcon } from "../utils/fileIcons";
 
 export default function Tabs({
@@ -15,12 +14,12 @@ export default function Tabs({
   t: { tabsBg: string; tabActive: string; tabInactive: string };
 }) {
   return (
-    <div className={`h-8 flex items-center overflow-x-auto ${t.tabsBg}`}>
+    <div className={`h-8 flex items-center overflow-x-auto scrollbar-thin ${t.tabsBg}`}>
       {openTabs.map((tab) => (
         <div
           key={tab}
           onClick={() => setActiveFile(tab)}
-          className={`flex items-center px-3 h-full text-sm cursor-pointer border-r border-[#1e1e1e] ${
+          className={`flex items-center px-2 md:px-3 h-full text-xs md:text-sm cursor-pointer border-r border-[#1e1e1e] flex-shrink-0 ${
             tab === activeFile ? t.tabActive : t.tabInactive
           }`}
         >

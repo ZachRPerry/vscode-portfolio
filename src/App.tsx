@@ -17,6 +17,7 @@ import {
   Footer,
   Header,
   Landing,
+  MobileMenu,
   Sidebar,
   Tabs,
   TerminalPane,
@@ -26,8 +27,17 @@ import {
 export default function App() {
   const { theme, t, setTheme: setThemeBase } = useTheme();
   const view = useViewState();
-  const achievements = useAchievements();
   const terminalCommandRef = useRef<((cmd: string, skipEcho?: boolean) => void) | null>(null);
+
+  // Callback for achievement unlocks to show confetti
+  const handleAchievementUnlock = useCallback(
+    (achievementId: string) => {
+      view.setShowConfetti(true);
+    },
+    [view]
+  );
+
+  const achievements = useAchievements(handleAchievementUnlock);
 
   // Wrap setTheme to include achievement tracking
   const setTheme = useCallback(
@@ -59,6 +69,10 @@ export default function App() {
       achievements.trackFileOpen(filename);
       view.setShowAchievements(false);
       view.setShowLanding(false);
+      // Hide explorer on mobile after opening file
+      if (window.innerWidth < 768) {
+        view.setShowExplorer(false);
+      }
     },
     [openFileBase, achievements, view]
   );
@@ -105,6 +119,28 @@ export default function App() {
           view.setShowAchievements(false);
           view.setShowLanding(true);
         }}
+        onMenuClick={() => view.setShowMobileMenu(true)}
+      />
+
+      <MobileMenu
+        isOpen={view.showMobileMenu}
+        onClose={() => view.setShowMobileMenu(false)}
+        t={t}
+        isExplorerActive={!view.showAchievements}
+        isAchievementsActive={view.showAchievements}
+        onOpenExplorer={() => {
+          view.setShowAchievements(false);
+          view.setShowExplorer(true);
+          setActiveFile(view.savedEditorState.activeFile);
+          setOpenTabs(view.savedEditorState.openTabs);
+          view.setShowLanding(!view.savedEditorState.activeFile);
+        }}
+        onOpenTerminal={() => view.setShowTerminal(true)}
+        onOpenAchievements={() => {
+          view.setSavedEditorState({ activeFile, openTabs });
+          view.setShowAchievements(true);
+          view.setShowLanding(false);
+        }}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -115,6 +151,7 @@ export default function App() {
           onOpenTerminal={() => view.setShowTerminal(true)}
           onOpenExplorer={() => {
             view.setShowAchievements(false);
+            view.setShowExplorer(true);
             setActiveFile(view.savedEditorState.activeFile);
             setOpenTabs(view.savedEditorState.openTabs);
             view.setShowLanding(!view.savedEditorState.activeFile);
@@ -134,6 +171,7 @@ export default function App() {
           activeFile={activeFile}
           t={t}
           onGitHubExpand={enableGitHub}
+          showOnMobile={view.showExplorer}
         />
 
         <main className="flex-1 flex flex-col">
@@ -153,6 +191,7 @@ export default function App() {
             <AchievementsView
               unlocked={achievements.progress.unlocked}
               progress={achievements.progress}
+              onHire={handleShowConfetti}
             />
           ) : (
             <EditorPane

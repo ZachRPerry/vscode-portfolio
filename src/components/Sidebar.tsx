@@ -1,4 +1,3 @@
-import React from "react";
 import ExplorerIcon from "../icons/ExplorerIcon";
 import GitHubIcon from "../icons/GitHubIcon";
 import LinkedInIcon from "../icons/LinkedInIcon";
@@ -26,7 +25,7 @@ export default function Sidebar({
   const iconHover = hoverBg;
   const activeIconColor = t.monaco === "vs" ? "text-[#1e1e1e]" : "text-white";
   return (
-    <aside className={`w-14 flex flex-col items-center py-3 gap-4 ${t.sidebarBg}`}>
+    <aside className={`w-14 hidden md:flex flex-col items-center py-3 gap-4 ${t.sidebarBg}`}>
       <button
         type="button"
         onClick={onOpenExplorer}

@@ -83,7 +83,7 @@ export default function TerminalPane({
 
   return (
     <div
-      className={`h-[200px] flex-shrink-0 font-mono text-sm flex flex-col ${t.terminalBg} ${separatorBorder} ${
+      className={`h-[200px] md:h-[250px] flex-shrink-0 font-mono text-sm flex flex-col ${t.terminalBg} ${separatorBorder} ${
         isLight ? "text-[#1e1e1e]" : "text-gray-200"
       }`}
     >

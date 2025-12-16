@@ -7,6 +7,7 @@ export { default as Explorer } from "./Explorer";
 export { default as Footer } from "./Footer";
 export { default as Header } from "./Header";
 export { default as Landing } from "./Landing";
+export { default as MobileMenu } from "./MobileMenu";
 export { default as Sidebar } from "./Sidebar";
 export { default as Tabs } from "./Tabs";
 export { default as TerminalPane } from "./TerminalPane";

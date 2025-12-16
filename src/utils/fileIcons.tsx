@@ -1,5 +1,3 @@
-import React from "react";
-
 export function getFileIcon(fileName: string) {
   const ext = fileName.split(".").pop()?.toLowerCase();
 

@@ -153,12 +153,14 @@ export default function Explorer({
   activeFile,
   t,
   onGitHubExpand,
+  showOnMobile,
 }: {
   files: FileMap;
-  openFile: (f: string) => void;
+  openFile: (file: string) => void;
   activeFile: string;
   t: { explorerBg: string; monaco?: string };
   onGitHubExpand?: () => void;
+  showOnMobile?: boolean;
 }) {
   const isLight = t.monaco === "vs";
   const itemActive = isLight ? "bg-[#e2e2e2]" : "bg-[#373737]";
@@ -166,7 +168,9 @@ export default function Explorer({
   const fileTree = buildFileTree(files);
 
   return (
-    <aside className={`w-56 p-3 text-sm ${t.explorerBg}`}>
+    <aside
+      className={`w-56 p-3 text-sm ${t.explorerBg} ${showOnMobile ? "block" : "hidden"} md:block`}
+    >
       <h3 className="text-xs mb-2">EXPLORER</h3>
       {fileTree.map((node) => (
         <FileTreeNode

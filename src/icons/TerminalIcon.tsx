@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function TerminalIcon({ className = "w-6 h-6" }: { className?: string }) {
   return (
     <svg

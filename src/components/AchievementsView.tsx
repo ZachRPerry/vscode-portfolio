@@ -9,9 +9,10 @@ type AchievementsViewProps = {
     themeSwitches: number;
     commandCount: number;
   };
+  onHire?: () => void;
 };
 
-export default function AchievementsView({ unlocked, progress }: AchievementsViewProps) {
+export default function AchievementsView({ unlocked, progress, onHire }: AchievementsViewProps) {
   const getProgress = (id: AchievementId): { current: number; total: number } => {
     const achievement = ACHIEVEMENTS[id];
     switch (id) {
@@ -66,7 +67,12 @@ export default function AchievementsView({ unlocked, progress }: AchievementsVie
                   isUnlocked
                     ? "border-[#007acc] bg-[#007acc]/5"
                     : "border-gray-300 dark:border-gray-700 opacity-60"
-                }`}
+                } ${id === "hired" && isUnlocked ? "cursor-pointer hover:bg-[#007acc]/10" : ""}`}
+                onClick={() => {
+                  if (id === "hired" && isUnlocked && onHire) {
+                    onHire();
+                  }
+                }}
               >
                 <div className="flex items-start gap-4">
                   <div className="text-4xl flex-shrink-0">{achievement.icon}</div>
