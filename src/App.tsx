@@ -101,7 +101,11 @@ export default function App() {
 						t={t}
 					/>
 
-					<EditorPane file={file} monacoTheme={t.monaco} />
+					<EditorPane
+						file={file}
+						monacoTheme={t.monaco}
+						onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
+					/>
 
 					<TerminalPane t={t} theme={theme} />
 				</main>

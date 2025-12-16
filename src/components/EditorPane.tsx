@@ -5,12 +5,14 @@ import Landing from "./Landing";
 export default function EditorPane({
 	file,
 	monacoTheme,
+	onOpenContact,
 }: {
 	file?: { language: string; value: string };
 	monacoTheme: string;
+	onOpenContact?: () => void;
 }) {
 	if (!file) {
-		return <Landing />;
+		return <Landing onOpenContact={onOpenContact} />;
 	}
 
 	return (

@@ -1,6 +1,10 @@
 import React from "react";
 
-export default function Landing() {
+export default function Landing({
+  onOpenContact,
+}: {
+  onOpenContact?: () => void;
+}) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
       <img src="/zLogoVS.png" alt="Logo" className="w-24 mb-4" />
@@ -14,9 +18,15 @@ export default function Landing() {
         <a href="#" className="px-4 py-2 bg-[#007acc] text-white rounded">
           View Resume
         </a>
-        <a href="#" className="px-4 py-2 border border-gray-600 rounded text-gray-200">
+        <button
+          type="button"
+          onClick={() => onOpenContact?.()}
+          className="px-4 py-2 border border-gray-600 rounded text-gray-200 disabled:opacity-50"
+          disabled={!onOpenContact}
+          aria-disabled={!onOpenContact}
+        >
           Contact
-        </a>
+        </button>
       </div>
     </div>
   );
