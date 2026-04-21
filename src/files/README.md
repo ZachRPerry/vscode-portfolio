@@ -1,6 +1,6 @@
 # Zach Perry
 
-Senior Software Engineer · Product-minded builder · Atlanta, GA
+Senior Software Engineer · Product-minded builder · Marietta, GA
 
 ## About
 

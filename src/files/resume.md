@@ -1,6 +1,6 @@
 # Zach Perry
 **Senior Software Engineer · Product-minded builder**
-Atlanta, GA · zachrperry@outlook.com · [linkedin.com/in/zachrperry](https://linkedin.com/in/zachrperry) · [github.com/ZachRPerry](https://github.com/ZachRPerry)
+Marietta, GA · zachrperry@outlook.com · [linkedin.com/in/zachrperry](https://linkedin.com/in/zachrperry) · [github.com/ZachRPerry](https://github.com/ZachRPerry)
 
 ---
 
