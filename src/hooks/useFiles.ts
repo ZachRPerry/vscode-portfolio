@@ -1,41 +1,15 @@
 import { useEffect, useState } from "react";
 import type { FileMap } from "../types";
-import useGitHubRepo from "./useGitHubRepo";
-import { GITHUB_PLACEHOLDER_TEXT } from "../constants/files";
 
-export default function useFiles(onOpenTerminal?: () => void) {
+export default function useFiles() {
   const [files, setFiles] = useState<FileMap>({});
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
-  const [githubEnabled, setGithubEnabled] = useState(false);
-  const [terminalCommandRef, setTerminalCommandRef] = useState<((cmd: string, skipEcho?: boolean) => void) | null>(null);
-  const [pendingError, setPendingError] = useState<string | null>(null);
-  const [errorSent, setErrorSent] = useState(false);
-  const { files: githubFiles, error: githubError } = useGitHubRepo("zachrperry", "vscode-portfolio", githubEnabled, terminalCommandRef, onOpenTerminal);
-
-  // When error occurs, store it and open terminal (only once)
-  useEffect(() => {
-    if (githubError && githubError !== pendingError && !errorSent) {
-      setPendingError(githubError);
-      if (onOpenTerminal) {
-        onOpenTerminal();
-      }
-    }
-  }, [githubError, pendingError, onOpenTerminal, errorSent]);
-
-  // When ref becomes available and we have a pending error, send it
-  useEffect(() => {
-    if (pendingError && terminalCommandRef && !errorSent) {
-      terminalCommandRef(`echo "❌ GitHub API Error: ${pendingError}"`, true);
-      setErrorSent(true); // Mark as sent to prevent repeats
-      setPendingError(null);
-    }
-  }, [pendingError, terminalCommandRef, errorSent]);
 
   useEffect(() => {
     const modules = import.meta.glob("../files/**/*", { as: "raw" });
     const load = async () => {
-      let entries = Object.entries(modules) as [string, () => Promise<string>][];
+      const entries = Object.entries(modules) as [string, () => Promise<string>][];
       const results: Record<string, { language: string; value: string }> = {};
 
       await Promise.all(
@@ -67,25 +41,11 @@ export default function useFiles(onOpenTerminal?: () => void) {
         })
       );
 
-      // Add a placeholder for the GitHub folder
-      results["GitHub/.placeholder"] = { language: "text", value: GITHUB_PLACEHOLDER_TEXT };
-
       setFiles(results);
     };
 
     load();
   }, []);
-
-  // Merge GitHub files when they're loaded
-  useEffect(() => {
-    if (Object.keys(githubFiles).length > 0) {
-      setFiles((prev) => {
-        // Remove placeholder and add GitHub files
-        const { "GitHub/.placeholder": _, ...rest } = prev;
-        return { ...rest, ...githubFiles };
-      });
-    }
-  }, [githubFiles]);
 
   const openFile = (file: string) => {
     if (!openTabs.includes(file)) setOpenTabs((prev) => [...prev, file]);
@@ -110,7 +70,5 @@ export default function useFiles(onOpenTerminal?: () => void) {
     closeTab,
     setOpenTabs,
     setActiveFile,
-    enableGitHub: () => setGithubEnabled(true),
-    setTerminalCommandRef,
   } as const;
 }

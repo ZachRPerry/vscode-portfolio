@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   useAchievements,
   useAppEffects,
@@ -57,9 +57,7 @@ export default function App() {
     closeTab,
     setActiveFile,
     setOpenTabs,
-    enableGitHub,
-    setTerminalCommandRef,
-  } = useFiles(() => view.setShowTerminal(true));
+  } = useFiles();
   const file = files[activeFile as keyof typeof files];
 
   // Wrap openFile to track achievements and hide views
@@ -79,13 +77,6 @@ export default function App() {
 
   // Register all app-level effects
   useAppEffects(achievements, theme, view.showThemeTip, view.setShowThemeTip, view.setPaletteOpen);
-
-  // Connect terminal command ref to useFiles for GitHub errors
-  // Update whenever showTerminal changes (terminal opens/closes)
-  useEffect(() => {
-    // Wrap in arrow function to avoid React treating it as a state updater
-    setTerminalCommandRef(() => terminalCommandRef.current);
-  }, [view.showTerminal, setTerminalCommandRef]);
 
   // Callbacks for confetti
   const handleShowConfetti = useCallback(() => {
@@ -170,7 +161,6 @@ export default function App() {
           openFile={openFile}
           activeFile={activeFile}
           t={t}
-          onGitHubExpand={enableGitHub}
           showOnMobile={view.showExplorer}
         />
 
@@ -186,6 +176,7 @@ export default function App() {
           {view.showLanding ? (
             <Landing
               onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
+              onOpenFile={files["resume.md"] ? openFile : undefined}
             />
           ) : view.showAchievements ? (
             <AchievementsView
@@ -198,6 +189,7 @@ export default function App() {
               file={file}
               monacoTheme={t.monaco}
               onOpenContact={files["contact.json"] ? () => openFile("contact.json") : undefined}
+              onOpenFile={openFile}
             />
           )}
 

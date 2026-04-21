@@ -13,15 +13,7 @@ function buildFileTree(files: FileMap): FileNode[] {
   const root: FileNode[] = [];
   const folderMap = new Map<string, FileNode>();
 
-  // Sort files, but put GitHub folder at the end
-  const fileNames = Object.keys(files).sort((a, b) => {
-    const aIsGitHub = a.startsWith("GitHub/");
-    const bIsGitHub = b.startsWith("GitHub/");
-
-    if (aIsGitHub && !bIsGitHub) return 1; // GitHub goes after
-    if (!aIsGitHub && bIsGitHub) return -1; // Non-GitHub goes before
-    return a.localeCompare(b); // Otherwise alphabetical
-  });
+  const fileNames = Object.keys(files).sort((a, b) => a.localeCompare(b));
 
   for (const filePath of fileNames) {
     const parts = filePath.split("/");
@@ -69,7 +61,6 @@ function FileTreeNode({
   itemHover,
   isLight,
   level = 0,
-  onGitHubExpand,
 }: {
   node: FileNode;
   openFile: (f: string) => void;
@@ -78,16 +69,10 @@ function FileTreeNode({
   itemHover: string;
   isLight: boolean;
   level?: number;
-  onGitHubExpand?: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleToggle = () => {
-    if (!isExpanded && node.name === "GitHub" && onGitHubExpand) {
-      onGitHubExpand();
-    }
-    setIsExpanded(!isExpanded);
-  };
+  const handleToggle = () => setIsExpanded(!isExpanded);
 
   if (node.type === "file") {
     return (
@@ -138,7 +123,6 @@ function FileTreeNode({
               itemHover={itemHover}
               isLight={isLight}
               level={level + 1}
-              onGitHubExpand={onGitHubExpand}
             />
           ))}
         </div>
@@ -152,14 +136,12 @@ export default function Explorer({
   openFile,
   activeFile,
   t,
-  onGitHubExpand,
   showOnMobile,
 }: {
   files: FileMap;
   openFile: (file: string) => void;
   activeFile: string;
   t: { explorerBg: string; monaco?: string };
-  onGitHubExpand?: () => void;
   showOnMobile?: boolean;
 }) {
   const isLight = t.monaco === "vs";
@@ -181,7 +163,6 @@ export default function Explorer({
           itemActive={itemActive}
           itemHover={itemHover}
           isLight={isLight}
-          onGitHubExpand={onGitHubExpand}
         />
       ))}
     </aside>
