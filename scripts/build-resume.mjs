@@ -12,7 +12,7 @@ const css = `
   @page { margin: 0.5in; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    font-size: 10.5pt;
+    font-size: 10.2pt;
     line-height: 1.38;
     color: #111;
   }

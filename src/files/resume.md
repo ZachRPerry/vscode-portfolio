@@ -1,67 +1,67 @@
 # Zach Perry
-**Senior Software Engineer · Product-minded builder**
+**Senior Software Engineer · Program & Launch Leadership**
+
 Marietta, GA · zachrperry@outlook.com · [linkedin.com/in/zachrperry](https://linkedin.com/in/zachrperry) · [github.com/ZachRPerry](https://github.com/ZachRPerry)
 
 ---
 
 ## Summary
 
-13+ years building and shipping web platforms with a focus on measurable customer outcomes. Partner with product and business stakeholders to turn requirements into user stories, then design, build, review, and deliver. Outside of day-job work, ship 0→1 consumer AI products end to end — extraction pipelines with eval harnesses gating model selection, confidence-gated human review, and privacy enforced at the database. Certified Product Manager (Product School).
+13+ years shipping web platforms, most of it as the person accountable for the launch — scoping the MVP against what the business actually needs, sequencing dependencies across product, QA, and operations, and owning delivery through production stabilization. Deep enough technically to be useful in the architecture conversation, and comfortable translating between engineering and the stakeholders who own the process being changed. Currently building 0→1 AI products, where launch readiness has to be a measured gate rather than a judgment call. Product School certified.
+
+## Selected launches & programs
+
+- **500+ stores in 3 weeks** — COVID contactless-ordering launch, ~25% under budget *(RaceTrac)*
+- **Kentico 12 → 13 migration** — two business-critical sites across product, QA, and ops *(Patterson)*
+- **Onboarding: ~30 days → under 10 minutes** — cross-functional process redesign *(Patterson)*
+- **Freeish, live on the App Store** — 0→1 launch, plus a platform migration under a shipped build *(independent)*
 
 ## Experience
 
 ### Senior Software Engineer — TEKsystems (Contract, at Patterson Companies)
 *Atlanta, GA · Nov 2021 – Present*
 
-Senior engineer on Patterson's dental and vet e-commerce platforms. The stack splits along concerns: **Kentico CMS powers the marketing side**, a **custom C# / SQL app handles the e-commerce core** (catalog, cart, checkout, order management).
+Dental and vet e-commerce platforms: Kentico CMS on the marketing side, a custom C# / SQL application for catalog, cart, checkout, and order management.
 
-- Led the **Kentico 12 → 13 upgrade** for both the Dental and Vet brand sites across product, QA, and ops.
-- Rebuilt the **Enterprise Marketing Solution** in Kentico, migrating a **60K+ email/week** system off vendor support to in-house management.
-- Ship features across both the custom C# e-commerce app and the Kentico marketing surface, owning the handoff between the two.
-- Modernizing the hosting footprint toward **Kubernetes** on the .NET / SQL stack.
-- Code reviews across both codebases; onboard, train, and manage new contractors.
-- Earned team spotlight award for cross-functional production-incident resolution.
+- **Led the Kentico 12 → 13 upgrade** for both brand sites — planning, technical design, dependency management, rollout sequencing, and production stabilization, coordinated across product, QA, and ops to de-risk a multi-year migration.
+- **Cut customer onboarding from ~30 days to under 10 minutes** by taking manual account provisioning off the critical path — customers get a restricted account immediately and can order while back-office review completes asynchronously. The work was redesigning the workflow with the business teams who owned the manual steps and getting agreement on what "restricted" meant.
+- **Migrated a 60K+ email/week marketing platform** off vendor-managed infrastructure into in-house ownership — vendor exit, capability parity, handover.
+- Own the CMS-to-commerce integration boundary — two systems, different release cadences, different owners. Architecture and code review, contractor onboarding, documentation, production incident response.
 
 ### Senior Developer & Team Lead — RaceTrac
 *Atlanta, GA · Sep 2015 – Nov 2021 · Promoted 2019*
 
-Led development across the RaceTrac digital ecosystem. Mentored two developers, owned all back-end development, ran Scrum, pitched product initiatives to leadership.
+- **Launched contactless ordering to 500+ stores in 3 weeks** during COVID, ~25% under budgeted time — scoped the MVP against business requirements, sequenced store-level product, pricing, and tax-rate variation, and integrated Payeezy + ServiceNow under the same clock.
+- **Ran the RaceTrac.com rebuild end to end** — pitched it to leadership, architected it, managed an external design agency through delivery; monthly traffic **90K → 200K** (+120%). Load-tested to 30K concurrent on Azure.
+- **Rewards VIP (1M+ users)** — stood up a separate loyalty site to validate a paid fuel-discount program *before* committing it to the main platform, then merged it once the bet paid off.
+- **SSC Portal** (1,000+ employees) — intranet with OnBase, HR, and AD integration; custom SignalR chat. **Won Kentico Site of the Year for Intranet (2016)**.
+- Ran daily Scrum and sprint planning with dev, QA, and product owners; mentored two developers; pitched enhancements to project managers and leadership.
 
-- **RaceTrac.com redesign** (Kentico 12 MVC, Azure): pitched, architected, managed an external design agency. Drove monthly traffic from **90K → 200K users** (+120%) with a new customer loyalty integration. Load-tested to 30K concurrent users.
-- **COVID-response contactless ordering** (`order.racetrac.com`): shipped end-to-end e-commerce for **500+ stores** in **3 weeks** — 25% under budget. Store-level product, pricing, and tax-rate customization; Payeezy + ServiceNow integrations.
-- **RaceTrac Rewards VIP** (1M+ users): architected a dedicated loyalty site to validate a paid fuel-discount program, later merged into the main site.
-- **SSC Portal** (internal, 1,000+ employees): Kentico 8 → 9 intranet with OnBase, HR, and AD integration; custom SignalR chat. **Won Kentico Site of the Year for Intranet (2016)**.
-- Also: Field Portal (500+ stores, Kentico 11 MVC + React), Franchise site, Energy Dispatch marketing site.
+### Independent — Remidy Labs
+*2026 – Present · [remidylabs.com](https://www.remidylabs.com)*
+
+Building consumer apps solo — product, engineering, release, and the decision record.
+
+- **Evals as the go/no-go gate** — a 63-check harness over labeled documents decides which model ships on which task, with a written accuracy/cost/latency comparison and a standing rule that nothing down-tiers without that task's eval green.
+- **Decision registers and ADRs** — what was decided, what's deliberately unproven, what got cut, including a documented descope where the justification "did not survive contact."
+- **Phased delivery** — every phase is one deploy leaving the app working; a live platform migration runs underneath a shipped App Store build.
+- **Remidy Control** — dependency graph with derived readiness and critical path, structured gates for blocking human work, and completion that requires evidence rather than assertion. Program management, encoded.
 
 ### Kentico Developer — Codesummit, LLC
-*Aurora, OH · May 2013 – Sep 2015*
-
-Client-services Kentico work in Agile/Scrum. Built community-group features for corporate health challenges, localized newsletters (Spanish support via resource strings + custom macros), and migrated SQL-view-backed features to event-based flows with caching.
-
-## Side Projects
-
-**Remidy Labs** — consumer apps on one shared platform: one Supabase backend shape, one Swift/Kotlin library, one release pipeline, one internal coordination system.
-
-- **Remidy Control** — the system coordinating me and every coding agent across the portfolio. **MCP server (~27 tools)** with per-agent auth and `SessionStart` hooks injecting project context and the ready queue into each session. Completion is **evidence-gated** — commit, PR, or deploy URL, because an agent asserting completion isn't evidence of it. Readiness and critical path derived from a dependency graph; append-only event log as the audit trail. Next.js + Postgres.
-- **[Tego](https://www.tego.family)** — household coordination. Claude vision extraction with per-field confidence and confirm-before-write; a **63-check eval harness gates model selection** (documented Opus/Sonnet/Haiku comparison on accuracy, cost, latency). Private-by-default visibility in Postgres RLS. SwiftUI + Supabase.
-- **[Josephine](https://josephine.family)** — family recipe preservation. Claude vision → structured JSON behind a typed contract, user-confirmed before save. Next.js + Supabase (RLS tenancy, `SECURITY DEFINER` RPCs), native iOS + Android.
-- **[Freeish](https://www.freeish.app)** — shared availability, **live on the App Store**. Per-event privacy in row-level security (pgTAP-tested); mid-flight Expo/RN → native SwiftUI + Kotlin/Compose migration with users on the old build.
-- **[Raid Roulette](https://www.raidroulette.com)** · **[Myers Driving Academy](https://myersdrivingacademy.net)** — Next.js on Vercel; MDA a full redesign + launch with Keystatic as a git-backed CMS.
+*Aurora, OH · May 2013 – Sep 2015* — client-services delivery against external client commitments; localization for Spanish-speaking users; SQL-view-backed features migrated to event-driven flows with caching.
 
 ## Tech
 
-**Languages & frameworks:** C# · ASP.NET MVC · Razor · ASP.NET Web API 2 · SignalR · JavaScript · TypeScript · React · Next.js · Swift/SwiftUI · Kotlin/Compose · HTML · CSS/SCSS · Tailwind
+**Program:** Agile/Scrum · Program planning · Dependency & risk management · Stakeholder management · Requirements & user stories · Launch readiness · Incident response
 
-**AI:** Claude API (vision + structured extraction) · MCP servers · schema-bound contracts · eval harnesses & model comparison · prompt caching, batching, consequence-based model routing · confidence-gated human review
+**Engineering:** C# · ASP.NET MVC · ASP.NET Web API · SignalR · TypeScript · React · Next.js · Swift/SwiftUI · Kotlin/Compose · SQL · Postgres
 
-**Cloud & infra:** Azure (Web Apps, SQL Database, Blob Storage, Redis Cache) · Kubernetes · Azure DevOps · Vercel · Supabase (Postgres, RLS, Auth, Edge Functions) · Postgres
+**AI:** Claude API (vision + structured extraction) · MCP servers · eval harnesses & model comparison · confidence-gated human review
 
-**CMS:** Kentico (12 years, Certified Developer) · Kentico EMS · Kentico Xperience · Keystatic
-
-**Practices:** Agile/Scrum · User stories · Technical requirements · Stakeholder management · Code review · Mentoring
+**Cloud & CMS:** Azure (Web Apps, SQL, Blob, Redis) · Kubernetes · Azure DevOps · Vercel · Supabase · Kentico (12 yrs, Certified Developer) · Kentico EMS/Xperience
 
 ## Certifications & Education
 
-**Product Manager Certificate** — Product School (Feb 2022) · **Kentico Certified Developer** · **OnBase Certified** System Administrator (OCSA), Workflow Administrator (OCWA), ABI Developer
+**Product Manager Certificate** — Product School (2022) · **Kentico Certified Developer** · **OnBase Certified** System Administrator (OCSA), Workflow Administrator (OCWA), ABI Developer
 
 **Associate of Applied Business** — Marion Technical College (2013)

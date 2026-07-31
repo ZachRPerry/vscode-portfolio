@@ -2,9 +2,9 @@
 
 Things I've built outside of day-job work, usually to scratch my own itch or explore a problem space.
 
-Most of them live under **Remidy Labs** — **Tego**, **Josephine**, and **Freeish** are consumer apps sharing one Supabase backend shape, one Swift/Kotlin library (`RemiKit` — auth, push, entitlements, caching, on-device AI gates), and one release pipeline. Pieces get extracted into the shared kit only when a second app actually needs them, which keeps the abstraction honest. **Remidy Control** is the internal system that coordinates the work across all of them.
+Most of them live under **[Remidy Labs](https://www.remidylabs.com)** — **Tego**, **Josephine**, and **Freeish** are consumer apps sharing one Supabase backend shape, one Swift/Kotlin library (`RemiKit` — auth, push, entitlements, caching, on-device AI gates), and one release pipeline. Pieces get extracted into the shared kit only when a second app actually needs them, which keeps the abstraction honest. **Remidy Control** is the internal system that coordinates the work across all of them.
 
-Two threads run through everything below. First: **how do you ship a feature whose output you can't fully trust?** — schema-bound extraction, per-field confidence, eval harnesses that gate model choice, confirm-before-write. Second: **how do you keep a portfolio of products moving when the labor is mostly coding agents?** — which is what Control is for.
+Two threads run through everything below. First: **how do you decide a feature is ready to launch when its core output comes from a model you can't fully trust?** — which turns launch readiness into a measured gate rather than a judgment call. Second: **how do you keep a portfolio of products moving in parallel?** — which is what Control is for.
 
 ---
 
@@ -12,21 +12,23 @@ Two threads run through everything below. First: **how do you ship a feature who
 **`control.remidylabs.com`** · internal, auth-gated
 `Active · 2026 – present` · Next.js · TypeScript · Postgres · MCP over HTTP · Vercel
 
-The operating system for the whole portfolio — the coordination layer between me and every coding agent working in a Remidy Labs repo. It answers one question well:
+A program-management system for the whole portfolio — the coordination layer between me and every coding agent working in a Remidy Labs repo. It answers one question well:
 
 > What can move now, what is blocked, who must act next, and what does completing this unlock?
 
-**Agents are first-class clients, not an afterthought.** Control exposes ~27 tools over an **MCP server at `/api/mcp`**, with bearer tokens identifying *which* agent is calling: `get_project_context`, `list_ready_tasks`, `claim_task`, `complete_task`, `create_dependency`, `request_human_action`, `report_drift`, `record_decision`, and so on. Every agent session opens by pulling its project context and its ready queue. A `SessionStart` hook in each repo's `.claude/settings.json` injects that automatically — **that hook is the adoption mechanism, not a nicety.** Without it agents forget Control exists and the system decays into a database nobody writes to.
+**The graph is the product.** Not "what tasks are open?" but *"what is preventing the next meaningful group of work from moving, and which action releases the largest group?"* Readiness, blocked counts, downstream impact, and **critical path are all derived from the dependency graph** — nothing computable is stored as a field someone has to remember to update. Stale status is the failure mode of every tracker I've used; the fix was to stop storing status at all.
 
-**Design decisions that came from actually running it:**
-- **Completion requires evidence.** `complete_task` refuses to close a task without an artifact — a commit, a PR, a deployment URL, a recorded decision, populated gate inputs. *An agent asserting completion is not evidence of completion.* GitHub webhooks now attach much of that evidence on their own.
-- **Human work is structured work.** Agents can't file "set up Apple." A manual gate carries exact instructions, links, `requiredInputs` the human must populate, what it blocks, and how completion is verified. The bottleneck in an agent-heavy workflow is the human, so the human's queue gets the most design attention.
-- **The graph is the product.** Not "what tasks are open?" but "what is preventing the next meaningful group of work from moving, and which human action releases the largest group?" Readiness, blocked counts, downstream impact, and critical path are all **derived from the dependency graph** — nothing that can be computed is stored as a field someone has to remember to update.
-- **Agents coordinate through Control instead of reaching into sibling repos.** An agent needing a change in another project files a `cross_project` request; Control creates the task in the target repo and links the dependency, and the requesting task resumes when the commit lands. It's a convention rather than an enforced boundary — held in place by each repo's agent instructions plus an append-only event log that makes violations visible.
-- **Events are the audit trail** because they have to be: Vercel retains runtime logs for an hour, so application logs can't serve that purpose.
-- **Scope discipline is written down.** Revision 1 specified ~4 apps, 8 packages, 40 tables, and 7 phases. Revision 2 cut the extension SDK entirely — *that's infrastructure for untrusted third-party authors, and this system has one author.* The alternative is "the agent adds a table and a route, and I review the diff": identical outcome, no runtime. The doc keeps a section on what was cut and why, and one feature was descoped mid-flight when its main justification "did not survive contact."
+**Human work is structured work.** The bottleneck in an agent-heavy workflow is the human, so the human's queue gets the most design attention. A gate task can't say "set up Apple" — it carries exact instructions, links, the `requiredInputs` that must be populated, what it blocks downstream, and how completion is verified. Vague blockers are how programs quietly stall.
 
-Control tracks its own development — the commit log is `CTL-##` all the way down.
+**Completion requires evidence.** `complete_task` refuses to close a task without an artifact — a commit, a PR, a deployment URL, a recorded decision, populated gate inputs. *An agent asserting completion is not evidence of completion.* GitHub webhooks now attach much of that evidence on their own.
+
+**Cross-team requests are routed, not improvised.** Work needing a change in another project files a `cross_project` request; Control creates the task in the target repo, links the dependency, and resumes the requesting task when the commit lands. It's a convention rather than an enforced boundary — held in place by written instructions in each repo plus an append-only event log that makes violations visible.
+
+**Adoption is a design problem, not a mandate.** A `SessionStart` hook in each repo injects project context and the ready queue into every agent session automatically. Without it, agents forget Control exists and the system decays into a database nobody writes to. **That hook is the adoption mechanism, not a nicety** — the same reason a status process nobody is prompted into stops being followed by week three.
+
+**Scope discipline is written down.** Revision 1 specified ~4 apps, 8 packages, 40 tables, and 7 build phases — a multi-month system for a one-person shop. Revision 2 cut the extension SDK entirely: *that's infrastructure for untrusted third-party authors, and this system has one author.* The alternative is "add a table and a route, and review the diff" — identical outcome, no runtime. The document keeps a standing section on what was cut and why, and one feature was descoped mid-flight when its central justification "did not survive contact."
+
+Under the hood it's an **MCP server (~27 tools)** with per-agent bearer auth, plus a CLI over the same HTTP API. Control tracks its own development — the commit log is `CTL-##` all the way down.
 
 ---
 
@@ -40,7 +42,7 @@ A coordination layer for households — custody schedules, handoffs, chores, bil
 
 **The AI problem, stated honestly:** capture is a vision-extraction pipeline whose output is *proposed*, never asserted. A photo produces a schema-bound extraction with **per-field confidence**; low-confidence fields route into a progressive confirmation sheet where the user edits before anything is written; corrections are logged as telemetry so the failure modes are measurable instead of anecdotal. Nothing the model produces reaches shared state without a human gate.
 
-**Model choice is a receipt, not a vibe.** There's a 63-check eval harness over labeled documents (`spike/extract.mjs` + `score.mjs`) and a written model comparison:
+**Launch readiness is measured, not argued.** There's a 63-check eval harness over labeled documents (`spike/extract.mjs` + `score.mjs`) and a written model comparison — so "is this good enough to ship?" has an answer with a number attached:
 
 | Model | Checks | Cost/capture | Avg latency |
 |---|---|---|---|

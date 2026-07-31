@@ -1,24 +1,33 @@
 # Zach Perry
 
-Senior Software Engineer · Product-minded builder · Marietta, GA
+Senior Software Engineer · Program & launch leadership · Marietta, GA
 
 ## About
 
-I've spent 13+ years building web platforms where **the user's experience is the product** — from a 1M-user rewards program and a 200K/month corporate site, to a COVID-era e-commerce launch that shipped in 3 weeks across 500+ stores.
+I've spent 13+ years shipping web platforms, and most of the work I'm proudest of is the work of getting something *out the door*: scoping an MVP against what the business actually needs, sequencing the dependencies, running the cadence across product, QA, and operations, and being the person accountable when it goes live.
 
-Nights and weekends I ship 0→1 consumer AI products end to end. Two problems there hold my attention. **How do you ship a feature whose output you can't fully trust?** — schema-bound extraction with per-field confidence, eval harnesses that gate which model runs which task, confirm-before-write on anything touching shared state, and privacy enforced in Postgres rather than in the UI. And **how do you keep a portfolio moving when most of the labor is coding agents?** — which is why I built Remidy Control: an MCP server and event log where agents claim work, file structured requests for the human, and can't close a task without evidence.
+The clearest example is still the one that had a deadline nobody set: **contactless ordering across 500+ stores in three weeks** during COVID, delivered about 25% under budget. The one I learned the most from is quieter — a **multi-year CMS platform migration** across two business-critical brand sites, where the job was dependency management, rollout sequencing, and production stabilization rather than any single technical decision.
 
-I work best at the intersection of **engineering depth** and **product judgment**. Kentico-certified, Product School certified.
+## What I'm doing now
+
+Nights and weekends I build 0→1 AI products, which turns out to be the best program-management training I've had. When a product's core feature is a model whose output you can't fully trust, "is this ready to launch?" stops being a judgment call and has to become a **measured gate**:
+
+- A **63-check eval harness** decides which model ships on which task — with a written comparison across accuracy, cost, and latency, and a standing rule that nothing moves to a cheaper model without that task's eval passing.
+- **Decision registers and ADRs** capture what was decided, what's still unproven, and what got cut — so scope changes leave a trail instead of an argument.
+- **Remidy Control**, the system coordinating my work with the coding agents across seven repos, is a program-management tool in disguise: a dependency graph with derived readiness and critical path, structured gates for the human work that blocks everything else, and completion that requires evidence rather than assertion.
 
 ## What you'll find here
 
-- **experience.md** — full work history, outcomes, and tech stack
-- **projects.md** — side projects, including Remidy Control, Tego, Josephine, and Freeish
+- **experience.md** — full work history, programs, launches, and outcomes
+- **projects.md** — the independent product work and how it's run
+- **resume.md** — one page and a half, or grab the PDF
 - **contact.json** — how to reach me
 - **Personal Files/** — a few extras
 
 ## Currently
 
-Senior Software Engineer @ **Patterson Companies** (via TEKsystems) — Kentico CMS subject matter expert on their dental and vet e-commerce platforms. Leading the Kentico 12 → 13 upgrade and the in-house rebuild of their 60K-emails-per-week marketing system.
+Senior Software Engineer @ **Patterson Companies** (via TEKsystems) — Kentico subject matter expert across their dental and vet e-commerce platforms. Led the Kentico 12 → 13 upgrade and the in-house rebuild of a 60K-emails-per-week marketing system.
 
-Nights & weekends: **Remidy Labs** — **Tego** (household coordination, Claude-powered capture), **Josephine** (family recipe preservation), and **Freeish** (shared availability, live on the App Store), on one shared Supabase + Swift/Kotlin platform, coordinated by **Remidy Control** (MCP server + agent task graph).
+Nights & weekends: **[Remidy Labs](https://www.remidylabs.com)** — **Tego**, **Josephine**, and **Freeish** (live on the App Store), on one shared platform, coordinated by **Remidy Control**.
+
+Product School certified, working toward product management.
