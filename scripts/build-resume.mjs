@@ -9,11 +9,11 @@ const input = join(ROOT, "src/files/resume.md");
 const output = join(ROOT, "public/Zach-Perry-Resume.pdf");
 
 const css = `
-  @page { margin: 0.6in; }
+  @page { margin: 0.5in; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 10.5pt;
-    line-height: 1.45;
+    line-height: 1.38;
     color: #111;
   }
   h1 {
@@ -23,7 +23,7 @@ const css = `
   }
   h2 {
     font-size: 13pt;
-    margin: 16pt 0 4pt 0;
+    margin: 9pt 0 3pt 0;
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 2pt;
     color: #007acc;
@@ -38,7 +38,7 @@ const css = `
   }
   p, ul, li { margin: 4pt 0; }
   ul { padding-left: 16pt; }
-  li { margin: 2pt 0; }
+  li { margin: 1.5pt 0; }
   a { color: #007acc; text-decoration: none; }
   code { background: #f3f3f3; padding: 1pt 3pt; border-radius: 3px; font-size: 9.5pt; }
   hr { border: none; border-top: 1px solid #ccc; margin: 10pt 0; }

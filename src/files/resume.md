@@ -6,7 +6,7 @@ Marietta, GA · zachrperry@outlook.com · [linkedin.com/in/zachrperry](https://l
 
 ## Summary
 
-13+ years building and shipping web platforms with a focus on measurable customer outcomes. Partner with product and business stakeholders to turn requirements into user stories, then design, build, review, and deliver. Certified Product Manager (Product School) with a long-term goal of moving into PM.
+13+ years building and shipping web platforms with a focus on measurable customer outcomes. Partner with product and business stakeholders to turn requirements into user stories, then design, build, review, and deliver. Outside of day-job work, ship 0→1 consumer AI products end to end — extraction pipelines with eval harnesses gating model selection, confidence-gated human review, and privacy enforced at the database. Certified Product Manager (Product School).
 
 ## Experience
 
@@ -40,25 +40,28 @@ Client-services Kentico work in Agile/Scrum. Built community-group features for 
 
 ## Side Projects
 
-- **[StreamArc](https://www.streamarc.live)** — overlay + alert platform for TikTok Live creators. Next.js + Tauri + Rust + Postgres monorepo.
-- **[Raid Roulette](https://www.raidroulette.com)** — Arc Raiders loadout/map/rule randomizer. Next.js + Tailwind on Vercel.
-- **[Myers Driving Academy](https://myersdrivingacademy.net)** — full redesign + launch on Next.js with Keystatic CMS on Vercel.
+**Remidy Labs** — consumer apps on one shared platform: one Supabase backend shape, one Swift/Kotlin library, one release pipeline, one internal coordination system.
+
+- **Remidy Control** — the system coordinating me and every coding agent across the portfolio. **MCP server (~27 tools)** with per-agent auth and `SessionStart` hooks injecting project context and the ready queue into each session. Completion is **evidence-gated** — commit, PR, or deploy URL, because an agent asserting completion isn't evidence of it. Readiness and critical path derived from a dependency graph; append-only event log as the audit trail. Next.js + Postgres.
+- **[Tego](https://www.tego.family)** — household coordination. Claude vision extraction with per-field confidence and confirm-before-write; a **63-check eval harness gates model selection** (documented Opus/Sonnet/Haiku comparison on accuracy, cost, latency). Private-by-default visibility in Postgres RLS. SwiftUI + Supabase.
+- **[Josephine](https://josephine.family)** — family recipe preservation. Claude vision → structured JSON behind a typed contract, user-confirmed before save. Next.js + Supabase (RLS tenancy, `SECURITY DEFINER` RPCs), native iOS + Android.
+- **[Freeish](https://www.freeish.app)** — shared availability, **live on the App Store**. Per-event privacy in row-level security (pgTAP-tested); mid-flight Expo/RN → native SwiftUI + Kotlin/Compose migration with users on the old build.
+- **[Raid Roulette](https://www.raidroulette.com)** · **[Myers Driving Academy](https://myersdrivingacademy.net)** — Next.js on Vercel; MDA a full redesign + launch with Keystatic as a git-backed CMS.
 
 ## Tech
 
-**Languages & frameworks:** C# · ASP.NET MVC · Razor · ASP.NET Web API 2 · SignalR · JavaScript · TypeScript · React · Next.js · jQuery · HTML · CSS/SCSS · Tailwind
-**Cloud & infra:** Azure (Web Apps, SQL Database, Blob Storage, Redis Cache) · Kubernetes · Azure DevOps · Vercel
+**Languages & frameworks:** C# · ASP.NET MVC · Razor · ASP.NET Web API 2 · SignalR · JavaScript · TypeScript · React · Next.js · Swift/SwiftUI · Kotlin/Compose · HTML · CSS/SCSS · Tailwind
+
+**AI:** Claude API (vision + structured extraction) · MCP servers · schema-bound contracts · eval harnesses & model comparison · prompt caching, batching, consequence-based model routing · confidence-gated human review
+
+**Cloud & infra:** Azure (Web Apps, SQL Database, Blob Storage, Redis Cache) · Kubernetes · Azure DevOps · Vercel · Supabase (Postgres, RLS, Auth, Edge Functions) · Postgres
+
 **CMS:** Kentico (12 years, Certified Developer) · Kentico EMS · Kentico Xperience · Keystatic
+
 **Practices:** Agile/Scrum · User stories · Technical requirements · Stakeholder management · Code review · Mentoring
 
-## Certifications
+## Certifications & Education
 
-- **Product Manager Certificate** — Product School (Feb 2022)
-- **Kentico Certified Developer**
-- **OnBase Certified System Administrator (OCSA)**
-- **OnBase Certified Workflow Administrator (OCWA)**
-- **OnBase Certified ABI Developer**
-
-## Education
+**Product Manager Certificate** — Product School (Feb 2022) · **Kentico Certified Developer** · **OnBase Certified** System Administrator (OCSA), Workflow Administrator (OCWA), ABI Developer
 
 **Associate of Applied Business** — Marion Technical College (2013)

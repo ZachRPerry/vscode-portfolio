@@ -12,6 +12,9 @@
 /build
 /dist
 
+# job-application drafts — kept local, never bundled into the site or committed
+/applications
+
 # misc
 .DS_Store
 .env.local
