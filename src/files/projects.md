@@ -2,35 +2,11 @@
 
 Things I've built outside of day-job work, usually to scratch my own itch or explore a problem space.
 
-Most of them live under **[Remidy Labs](https://www.remidylabs.com)** — **Tego**, **Josephine**, and **Freeish** are consumer apps sharing one Supabase backend shape, one Swift/Kotlin library (`RemiKit` — auth, push, entitlements, caching, on-device AI gates), and one release pipeline. Pieces get extracted into the shared kit only when a second app actually needs them, which keeps the abstraction honest. **Remidy Control** is the internal system that coordinates the work across all of them.
+Most of them live under **[Remidy Labs](https://www.remidylabs.com)** — **Tego**, **Josephine**, and **Freeish** are consumer apps sharing one Supabase backend shape, one Swift/Kotlin library (`RemiKit` — auth, push, entitlements, caching, on-device AI gates), and one release pipeline. Pieces get extracted into the shared kit only when a second app actually needs them, which keeps the abstraction honest.
 
-Two threads run through everything below. First: **how do you decide a feature is ready to launch when its core output comes from a model you can't fully trust?** — which turns launch readiness into a measured gate rather than a judgment call, and sometimes into a decision to ship *without* the model at all. Second: **how do you keep a portfolio of products moving in parallel?** — which is what Control is for.
+One thread runs through everything below: **how do you decide a feature is ready to launch when its core output comes from a model you can't fully trust?** — which turns launch readiness into a measured gate rather than a judgment call, and sometimes into a decision to ship *without* the model at all.
 
-The clearest answer to the first question is **Rescript Sleep**, below: a written safety spec where every prohibition is a test, and a v1 that ships with its AI drafting switched off despite passing those tests.
-
----
-
-## Remidy Control
-**`control.remidylabs.com`** · internal, auth-gated
-`Active · 2026 – present` · Next.js · TypeScript · Postgres · MCP over HTTP · Vercel
-
-A program-management system for the whole portfolio — the coordination layer between me and every coding agent working in a Remidy Labs repo. It answers one question well:
-
-> What can move now, what is blocked, who must act next, and what does completing this unlock?
-
-**The graph is the product.** Not "what tasks are open?" but *"what is preventing the next meaningful group of work from moving, and which action releases the largest group?"* Readiness, blocked counts, downstream impact, and **critical path are all derived from the dependency graph** — nothing computable is stored as a field someone has to remember to update. Stale status is the failure mode of every tracker I've used; the fix was to stop storing status at all.
-
-**Human work is structured work.** The bottleneck in an agent-heavy workflow is the human, so the human's queue gets the most design attention. A gate task can't say "set up Apple" — it carries exact instructions, links, the `requiredInputs` that must be populated, what it blocks downstream, and how completion is verified. Vague blockers are how programs quietly stall.
-
-**Completion requires evidence.** `complete_task` refuses to close a task without an artifact — a commit, a PR, a deployment URL, a recorded decision, populated gate inputs. *An agent asserting completion is not evidence of completion.* GitHub webhooks now attach much of that evidence on their own.
-
-**Cross-team requests are routed, not improvised.** Work needing a change in another project files a `cross_project` request; Control creates the task in the target repo, links the dependency, and resumes the requesting task when the commit lands. It's a convention rather than an enforced boundary — held in place by written instructions in each repo plus an append-only event log that makes violations visible.
-
-**Adoption is a design problem, not a mandate.** A `SessionStart` hook in each repo injects project context and the ready queue into every agent session automatically. Without it, agents forget Control exists and the system decays into a database nobody writes to. **That hook is the adoption mechanism, not a nicety** — the same reason a status process nobody is prompted into stops being followed by week three.
-
-**Scope discipline is written down.** Revision 1 specified ~4 apps, 8 packages, 40 tables, and 7 build phases — a multi-month system for a one-person shop. Revision 2 cut the extension SDK entirely: *that's infrastructure for untrusted third-party authors, and this system has one author.* The alternative is "add a table and a route, and review the diff" — identical outcome, no runtime. The document keeps a standing section on what was cut and why, and one feature was descoped mid-flight when its central justification "did not survive contact."
-
-Under the hood it's an **MCP server (~27 tools)** with per-agent bearer auth, plus a CLI over the same HTTP API. Control tracks its own development — the commit log is `CTL-##` all the way down.
+The clearest answer is **Rescript Sleep**, below: a written safety spec where every prohibition is a test, and a v1 that ships with its AI drafting switched off despite passing those tests.
 
 ---
 
