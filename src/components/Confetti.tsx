@@ -57,7 +57,7 @@ export default function Confetti({
       rotationSpeed: (Math.random() - 0.5) * 0.2,
     }));
 
-    let startTime = Date.now();
+    const startTime = Date.now();
     const duration = 4000; // 4 seconds
 
     const animate = () => {
