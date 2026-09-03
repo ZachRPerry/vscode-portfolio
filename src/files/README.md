@@ -14,7 +14,7 @@ Nights and weekends I build consumer AI products at **[Remidy Labs](https://www.
 
 - A **63-check eval harness** decides which model ships on which task — with a written comparison across accuracy, cost, and latency, and a standing rule that nothing moves to a cheaper model without that task's eval passing.
 - **Decision registers and ADRs** capture what was decided, what's still unproven, and what got cut — so scope changes leave a trail instead of an argument.
-- And sometimes the gate says no. **Rescript Sleep** — a clinical app for reducing recurring nightmares — carries a written **AI safety spec** where every prohibition is a deterministic check and one violation blocks the release. Its v1 ships with AI drafting switched **off** despite passing those checks, because a clinician review was outstanding and because a manual-first release reads user retention without model quality confounding the answer.
+- And sometimes the gate says no. **Rescript Sleep** — a clinical app for reducing recurring nightmares — carries a written **AI safety spec** where every prohibition is a deterministic check and one violation blocks the release. Its v1 ships with AI drafting switched **off** despite passing those checks, because the clinical review that feature warrants hasn't happened yet, and because a manual-first release reads user retention without model quality confounding the answer.
 
 ## What you'll find here
 

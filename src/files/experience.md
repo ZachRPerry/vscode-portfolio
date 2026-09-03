@@ -68,7 +68,7 @@ Client-services Kentico work in an Agile/Scrum environment, delivering against e
 Building a portfolio of consumer apps solo, which means owning every function at once: product, engineering, release, and the decision record. Detail in **projects.md** — the highlights:
 
 - **Evals as the go/no-go gate.** A 63-check harness over labeled documents decides which model ships on which task, with a written accuracy/cost/latency comparison and a standing rule that nothing down-tiers without that task's eval green. Launch readiness is measured, not argued.
-- **Safety prohibitions as release gates.** Rescript Sleep carries a written AI safety spec — a global "Never" list enforced as deterministic checks, where a single confirmed violation fails the eval run and blocks the prompt revision from shipping. Its v1 ships with AI drafting off despite passing those checks, pending an outstanding clinician review.
+- **Safety prohibitions as release gates.** Rescript Sleep carries a written AI safety spec — a global "Never" list enforced as deterministic checks, where a single confirmed violation fails the eval run and blocks the prompt revision from shipping. Its v1 ships with AI drafting off despite passing those checks — the clinical review that feature warrants hasn't happened yet.
 - **Decision registers and ADRs.** What was decided, what's deliberately unproven, and what got cut — including a documented scope reduction where the justification "did not survive contact."
 - **Phased delivery.** Every phase is one deploy that leaves the app working; migrations replay from scratch; a live platform migration runs underneath a shipped App Store build.
 
@@ -92,4 +92,4 @@ Building a portfolio of consumer apps solo, which means owning every function at
 - **OnBase Certified ABI Developer**
 
 ## Education
-- **Associate of Applied Business** — Marion Technical College (2013)
+- **Associate of Applied Business, Software Development** — Marion Technical College (2013)

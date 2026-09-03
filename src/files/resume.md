@@ -63,4 +63,4 @@ Building consumer apps solo — product, engineering, release, and the decision 
 
 **Product Manager Certificate** — Product School (2022) · **Kentico Certified Developer** · **OnBase Certified** System Administrator (OCSA), Workflow Administrator (OCWA), ABI Developer
 
-**Associate of Applied Business** — Marion Technical College (2013)
+**Associate of Applied Business, Software Development** — Marion Technical College (2013)
