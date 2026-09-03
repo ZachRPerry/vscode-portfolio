@@ -10,9 +10,10 @@ export default function Landing({
       <img src="/zLogoVS.png" alt="Logo" className="w-16 md:w-24 mb-3 md:mb-4" />
       <h1 className="text-xl md:text-2xl font-semibold mb-2">Zach Perry</h1>
       <p className="max-w-xl text-sm md:text-base text-gray-300 mb-4 px-4">
-        Senior Software Engineer who runs launches. 13+ years shipping web platforms — scoping with
-        business stakeholders, sequencing dependencies, and owning delivery through production.
-        Lately: 0→1 AI products, where the programs have no precedent and evals are the go/no-go gate.
+        Senior Software Engineer. 13+ years building and shipping web products — writing the
+        requirements, building the features, and staying accountable through production. Lately:
+        consumer AI products, where launch readiness has to be a measured gate rather than a
+        judgment call.
       </p>
       <div className="flex flex-col md:flex-row gap-3 md:gap-4 w-full md:w-auto px-4">
         <button

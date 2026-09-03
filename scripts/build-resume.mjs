@@ -56,6 +56,8 @@ await mdToPdf(
       format: "Letter",
       printBackground: true,
     },
+    // Chromium's sandbox is unavailable on CI runners.
+    launch_options: { args: ["--no-sandbox", "--disable-setuid-sandbox"] },
   }
 );
 

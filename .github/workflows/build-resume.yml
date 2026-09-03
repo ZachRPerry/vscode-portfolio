@@ -1,0 +1,46 @@
+name: Build resume PDF
+
+# Keeps public/Zach-Perry-Resume.pdf in sync with src/files/resume.md, so the
+# downloadable resume can't drift from the rendered one.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/files/resume.md"
+      - "scripts/build-resume.mjs"
+      - ".github/workflows/build-resume.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-resume
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build:resume
+
+      - name: Commit regenerated PDF
+        run: |
+          if git diff --quiet -- public/Zach-Perry-Resume.pdf; then
+            echo "PDF already matches resume.md — nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/Zach-Perry-Resume.pdf
+          git commit -m "Regenerate resume PDF from resume.md"
+          git push
